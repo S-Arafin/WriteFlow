@@ -1,12 +1,159 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum PlanType {
+  FREE
+  PRO
+  TEAM
+}
+
+enum DocumentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum TemplateCategory {
+  BLOG
+  SOCIAL
+  EMAIL
+  AD_COPY
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum UsageAgentType {
+  DRAFT
+  REWRITE
+  CHAT
+  SUMMARISE
+}
+
+model User {
+  id             String      @id @default(uuid())
+  email          String      @unique
+  name           String?
+  avatarUrl      String?
+  bio            String?
+  role           UserRole    @default(USER)
+  plan           PlanType    @default(FREE)
+  isBanned       Boolean     @default(false)
+  hashedPassword String?
+  createdAt      DateTime    @default(now())
+
+  documents      Document[]
+  reviews        Review[]
+  usageLogs      UsageLog[]
+  accounts       Account[]
+
+  @@index([email])
+  @@index([role, createdAt])
+}
+
+model Document {
+  id              String         @id @default(uuid())
+  title           String
+  content         String         @db.Text
+  metaDescription String?
+  tags            String[]
+  status          DocumentStatus @default(DRAFT)
+  wordCount       Int
+  authorId        String
+  author          User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  templateId      String?
+  template        Template?      @relation(fields: [templateId], references: [id], onDelete: SetNull)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([authorId, status])
+  @@index([authorId, createdAt])
+}
+
+model Template {
+  id             String           @id @default(uuid())
+  slug           String           @unique
+  title          String
+  description    String
+  prompt         String           @db.Text
+  sampleOutput   String?          @db.Text
+  thumbnailUrl   String?
+  category       TemplateCategory
+  tone           String?
+  estimatedWords Int?
+  aiModel        String           @default("claude-3-5-sonnet")
+  usageCount     Int              @default(0)
+  rating         Float            @default(0.0)
+  isPublished    Boolean          @default(false)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  documents      Document[]
+  reviews        Review[]
+
+  @@index([category])
+  @@index([isPublished, rating])
+}
+
+model Review {
+  id         String       @id @default(uuid())
+  rating     Int
+  body       String?      @db.Text
+  status     ReviewStatus @default(PENDING)
+  authorId   String
+  author     User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  templateId String
+  template   Template     @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  createdAt  DateTime     @default(now())
+
+  @@unique([authorId, templateId])
+  @@index([templateId])
+}
+
+model UsageLog {
+  id            String         @id @default(uuid())
+  agentType     UsageAgentType
+  promptSnippet String?        @db.Text
+  tokensUsed    Int
+  model         String
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+
+  @@index([userId, createdAt])
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
 }
