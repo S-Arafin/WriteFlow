@@ -9,7 +9,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
@@ -45,23 +44,21 @@ export function UserDropdown({ user }: UserDropdownProps) {
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"
-        className="w-56 border-neutral-800 bg-neutral-900 text-neutral-200"
+        className="w-56 border-neutral-800 bg-neutral-900 p-1 text-neutral-200"
       >
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm leading-none font-semibold text-white">
-              {user.name || 'User'}
-            </p>
-            <p className="truncate text-xs leading-none text-neutral-400">
-              {user.email}
-            </p>
-            {user.role && (
-              <span className="mt-1 inline-flex self-start rounded border border-indigo-500/30 bg-indigo-500/20 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-indigo-300 uppercase">
-                {user.role}
-              </span>
-            )}
-          </div>
-        </DropdownMenuLabel>
+        <div className="flex flex-col space-y-1 px-3 py-2.5 font-normal">
+          <p className="text-sm leading-none font-semibold text-white">
+            {user.name || 'User'}
+          </p>
+          <p className="mt-0.5 truncate text-xs leading-none text-neutral-400">
+            {user.email}
+          </p>
+          {user.role && (
+            <span className="mt-1 inline-flex self-start rounded border border-indigo-500/30 bg-indigo-500/20 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-indigo-300 uppercase">
+              {user.role}
+            </span>
+          )}
+        </div>
         <DropdownMenuSeparator className="bg-neutral-800" />
         <DropdownMenuItem
           render={
