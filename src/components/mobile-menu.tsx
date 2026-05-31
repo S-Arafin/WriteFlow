@@ -4,6 +4,7 @@ import {
   Menu,
   Home,
   BookOpen,
+  LayoutGrid,
   User,
   Mail,
   LayoutDashboard,
@@ -33,6 +34,7 @@ export function MobileMenu({ isAuthenticated }: MobileMenuProps) {
 
   const menuItems = [
     { label: 'Home', href: '/', icon: Home },
+    { label: 'Explore', href: '/explore', icon: LayoutGrid },
     { label: 'Blog', href: '/blog', icon: BookOpen },
     { label: 'About', href: '/about', icon: User },
     { label: 'Contact', href: '/contact', icon: Mail },
