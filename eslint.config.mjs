@@ -29,7 +29,7 @@ const eslintConfig = defineConfig([
     rules: {
       // Prevent circular dependencies
       "import/no-self-import": "error",
-      "import/no-cycle": ["error", { "maxDepth": "Infinity" }],
+      "import/no-cycle": "error",
       "import/order": [
         "error",
         {
