@@ -3,6 +3,13 @@
 import 'dotenv/config';
 import { defineConfig } from 'prisma/config';
 
+// In CI environments (e.g., GitHub Actions), DATABASE_URL may not be set during
+// the `prisma generate` step (client type generation). We fall back to a dummy
+// PostgreSQL URL so generation succeeds. The real URL is always required at runtime.
+const databaseUrl =
+  process.env['DATABASE_URL'] ??
+  'postgresql://ci_placeholder:ci_placeholder@localhost:5432/ci_placeholder';
+
 export default defineConfig({
   schema: 'prisma/schema.prisma',
   migrations: {
@@ -10,6 +17,6 @@ export default defineConfig({
     seed: 'npx tsx ./prisma/seed.ts',
   },
   datasource: {
-    url: process.env['DATABASE_URL'],
+    url: databaseUrl,
   },
 });
