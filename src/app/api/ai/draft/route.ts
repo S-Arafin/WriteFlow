@@ -1,13 +1,13 @@
 import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-type PlanType = 'FREE' | 'PRO' | 'TEAM';
-
 import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
 import { DRAFT_SYSTEM_PROMPT, createDraftPrompt } from '@/lib/ai/prompts';
 import { checkRateLimit } from '@/lib/ai/ratelimit';
 import prisma from '@/lib/prisma';
+
+type PlanType = 'FREE' | 'PRO' | 'TEAM';
 
 // Node.js serverless runtime — avoids the 1 MB Edge Function size limit
 export const runtime = 'nodejs';
