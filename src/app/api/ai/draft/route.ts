@@ -7,8 +7,10 @@ import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
 import { DRAFT_SYSTEM_PROMPT, createDraftPrompt } from '@/lib/ai/prompts';
 import { checkRateLimit } from '@/lib/ai/ratelimit';
+import prisma from '@/lib/prisma';
 
-export const runtime = 'edge';
+// Node.js serverless runtime — avoids the 1 MB Edge Function size limit
+export const runtime = 'nodejs';
 
 const secret = process.env.NEXTAUTH_SECRET;
 
@@ -28,6 +30,22 @@ export async function POST(req: NextRequest) {
 
     const userId = token.id as string;
     const userPlan = token.plan as PlanType;
+
+    // Check if AI is enabled globally via direct DB query (avoids loopback fetch)
+    try {
+      const siteConfig = await prisma.siteConfig.findUnique({
+        where: { id: 'singleton' },
+        select: { aiEnabled: true },
+      });
+      if (siteConfig && !siteConfig.aiEnabled) {
+        return new Response(
+          'Service Unavailable: AI features are currently disabled by the administrator.',
+          { status: 503 }
+        );
+      }
+    } catch (err) {
+      console.error('Failed to verify global AI status:', err);
+    }
 
     // 2. Upstash Redis plan-based rate limiter
     const rateLimit = await checkRateLimit(userId, userPlan);
