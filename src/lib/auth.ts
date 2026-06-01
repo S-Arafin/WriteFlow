@@ -1,4 +1,5 @@
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import { PlanType } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { NextAuthOptions } from 'next-auth';
 import { Adapter } from 'next-auth/adapters';
@@ -53,6 +54,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
+          plan: user.plan,
         };
       },
     }),
@@ -63,12 +65,14 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.plan = user.plan;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id as string;
       session.user.role = token.role as 'USER' | 'ADMIN';
+      session.user.plan = token.plan as PlanType;
       return session;
     },
   },
