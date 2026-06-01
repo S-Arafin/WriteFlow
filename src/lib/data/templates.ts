@@ -100,8 +100,11 @@ export async function getTemplates(
     _count: { select: { reviews: true } },
   } satisfies Prisma.TemplateSelect;
 
-  // Atomic transaction: findMany + count share the same WHERE predicate
-  const [templates, total] = await prisma.$transaction([
+  // Run findMany and count concurrently. $transaction([...]) requires a
+  // dedicated connection (BEGIN/COMMIT) which times out under the PrismaPg
+  // pool adapter. Promise.all is correct here — these are read-only queries
+  // with no cross-query write visibility requirements.
+  const [templates, total] = await Promise.all([
     prisma.template.findMany({ where, orderBy, skip, take: safeLimit, select }),
     prisma.template.count({ where }),
   ]);
