@@ -1,6 +1,7 @@
-import { PlanType } from '@prisma/client';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
+
+type PlanType = 'FREE' | 'PRO' | 'TEAM';
 
 const redisUrl = process.env.UPSTASH_REDIS_REST_URL;
 const redisToken = process.env.UPSTASH_REDIS_REST_TOKEN;
@@ -58,14 +59,14 @@ export async function checkRateLimit(
     );
     return {
       success: true,
-      limit: plan === PlanType.FREE ? 10 : 100,
+      limit: plan === 'FREE' ? 10 : 100,
       remaining: 999,
       reset: Date.now() + 3600000,
     };
   }
 
   const key = `ratelimit:${userId}`;
-  const limiter = plan === PlanType.FREE ? freeLimiter : proLimiter;
+  const limiter = plan === 'FREE' ? freeLimiter : proLimiter;
 
   try {
     const { success, limit, remaining, reset } = await limiter.limit(key);
@@ -75,7 +76,7 @@ export async function checkRateLimit(
     // Safe fallback: allow query in case of Upstash network failures to prevent outage
     return {
       success: true,
-      limit: plan === PlanType.FREE ? 10 : 100,
+      limit: plan === 'FREE' ? 10 : 100,
       remaining: 1,
       reset: Date.now() + 3600000,
     };

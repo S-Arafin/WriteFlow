@@ -1,6 +1,7 @@
-import { UsageAgentType, PlanType } from '@prisma/client';
 import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+
+type PlanType = 'FREE' | 'PRO' | 'TEAM';
 
 import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
@@ -124,7 +125,7 @@ export async function POST(req: NextRequest) {
             ) + 80;
           logAiUsageAsync(req.url, {
             userId,
-            agentType: UsageAgentType.CHAT,
+            agentType: 'CHAT',
             promptSnippet: lastUserMessage.content.slice(0, 100),
             tokensUsed: estimatedTokens,
             model,

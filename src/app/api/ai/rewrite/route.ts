@@ -1,6 +1,7 @@
-import { UsageAgentType, PlanType } from '@prisma/client';
 import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+
+type PlanType = 'FREE' | 'PRO' | 'TEAM';
 
 import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
@@ -78,7 +79,7 @@ export async function POST(req: NextRequest) {
       Math.ceil((rewritten.length + selectedText.length) / 4) + 60;
     logAiUsageAsync(req.url, {
       userId,
-      agentType: UsageAgentType.REWRITE,
+      agentType: 'REWRITE',
       promptSnippet: `Tone: ${tone} | ${selectedText.slice(0, 50)}`,
       tokensUsed: totalTokens,
       model,

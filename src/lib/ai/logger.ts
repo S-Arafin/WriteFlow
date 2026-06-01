@@ -1,4 +1,4 @@
-import { UsageAgentType } from '@prisma/client';
+type UsageAgentType = 'DRAFT' | 'REWRITE' | 'CHAT' | 'SUMMARISE';
 
 export interface LogUsagePayload {
   userId: string;
