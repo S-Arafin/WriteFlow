@@ -1,3 +1,5 @@
+import prisma from '@/lib/prisma';
+
 type UsageAgentType = 'DRAFT' | 'REWRITE' | 'CHAT' | 'SUMMARISE';
 
 export interface LogUsagePayload {
@@ -9,27 +11,27 @@ export interface LogUsagePayload {
 }
 
 /**
- * Dispatches a fire-and-forget non-blocking fetch call to our Node.js
- * serverless usage-logger API route. This prevents slow database writes
- * from blocking or introducing latency to active OpenAI completion streams.
+ * Directly writes AI usage records to the database using Prisma.
+ * Bypasses local API loopback fetch calls to avoid server-side session issues.
  */
 export function logAiUsageAsync(
-  baseUrl: string,
+  _baseUrl: string, // Kept to maintain compatibility with existing callers
   payload: LogUsagePayload
 ): void {
-  const url = new URL('/api/usage/log', baseUrl).toString();
-
-  fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  }).catch((err) => {
-    // Graceful error logging to prevent interrupting caller execution
-    console.error(
-      '[logAiUsageAsync] Failed to send usage log asynchronously:',
-      err
-    );
-  });
+  prisma.usageLog
+    .create({
+      data: {
+        userId: payload.userId,
+        agentType: payload.agentType,
+        promptSnippet: payload.promptSnippet?.trim() || null,
+        tokensUsed: payload.tokensUsed,
+        model: payload.model,
+      },
+    })
+    .catch((err) => {
+      console.error(
+        '[logAiUsageAsync] Failed to write usage log to database:',
+        err
+      );
+    });
 }

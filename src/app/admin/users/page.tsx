@@ -1,8 +1,6 @@
 import { UserRole } from '@prisma/client';
 import {
   Search,
-  ShieldAlert,
-  UserCheck,
   Shield,
   Ban,
   CheckCircle,
@@ -18,6 +16,7 @@ import { getServerSession } from 'next-auth';
 import React from 'react';
 
 import { changeUserRole, toggleBan } from '@/actions/admin';
+import { ToggleBanButton } from '@/components/admin/toggle-ban-button';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
@@ -243,37 +242,12 @@ export default async function ManageUsersPage({
                             </button>
                           </form>
 
-                          {/* Toggle Ban Trigger */}
-                          <form
-                            action={handleBanToggle}
-                            className="inline-flex"
-                            onSubmit={(e) => {
-                              if (
-                                !confirm(
-                                  `Are you absolutely sure you want to ${u.isBanned ? 'UNBAN' : 'BAN'} this user's account?`
-                                )
-                              ) {
-                                e.preventDefault();
-                              }
-                            }}
-                          >
-                            <input type="hidden" name="userId" value={u.id} />
-                            <button
-                              type="submit"
-                              className={`inline-flex items-center gap-1 rounded-xl border px-2.5 py-1.5 text-xs font-semibold tracking-wider uppercase transition-colors ${
-                                u.isBanned
-                                  ? 'border-emerald-950/30 bg-emerald-950/10 text-emerald-400 hover:bg-emerald-950/30'
-                                  : 'border-red-950/30 bg-red-950/10 text-red-400 hover:bg-red-950/30'
-                              }`}
-                            >
-                              {u.isBanned ? (
-                                <UserCheck className="h-3.5 w-3.5" />
-                              ) : (
-                                <ShieldAlert className="h-3.5 w-3.5" />
-                              )}
-                              <span>{u.isBanned ? 'Unban' : 'Ban'}</span>
-                            </button>
-                          </form>
+                          {/* Toggle Ban Trigger using client component */}
+                          <ToggleBanButton
+                            userId={u.id}
+                            isBanned={u.isBanned}
+                            onToggleBan={handleBanToggle}
+                          />
                         </div>
                       )}
                     </td>

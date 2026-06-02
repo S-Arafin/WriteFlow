@@ -2,7 +2,6 @@ import {
   FileText,
   Search,
   Plus,
-  Trash2,
   Edit3,
   Calendar,
   FilePenLine,
@@ -16,6 +15,7 @@ import { getServerSession } from 'next-auth';
 import React from 'react';
 
 import { deleteDocument } from '@/actions/documents';
+import { DeleteDocumentButton } from '@/components/dashboard/delete-document-button';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
@@ -268,28 +268,11 @@ export default async function DashboardPage({
                         <Edit3 className="h-4 w-4" />
                       </Link>
 
-                      {/* Delete Form with dialog check */}
-                      <form
-                        action={handleDelete}
-                        onSubmit={(e) => {
-                          if (
-                            !confirm(
-                              'Are you absolutely sure you want to delete this document? This action is permanent and cannot be undone.'
-                            )
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      >
-                        <input type="hidden" name="documentId" value={doc.id} />
-                        <button
-                          type="submit"
-                          className="inline-flex rounded-lg border border-red-950/30 bg-red-950/10 p-2 text-red-400 transition-colors hover:bg-red-950/30 hover:text-red-300"
-                          title="Delete Document"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </form>
+                      {/* Delete Form with dialog check using client component */}
+                      <DeleteDocumentButton
+                        documentId={doc.id}
+                        onDelete={handleDelete}
+                      />
                     </div>
                   </td>
                 </tr>
