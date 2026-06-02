@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getServerSession } from 'next-auth';
 
-import { openai } from '@/lib/ai/openai';
+import { gemini } from '@/lib/ai/gemini';
 import { authOptions } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 
@@ -67,22 +67,29 @@ Return your response as a JSON object in this exact format:
   "sentiment": "POSITIVE"
 }`;
 
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
+    const completion = await gemini.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: prompt,
+      config: {
+        responseMimeType: 'application/json',
+      },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const resultText = completion.choices[0]?.message?.content || '{}';
+    const resultText = completion.text || '{}';
     const resultJson = JSON.parse(resultText);
 
     return NextResponse.json(resultJson);
   } catch (error) {
+    const err = error as {
+      status?: number;
+      statusCode?: number;
+      error?: { message?: string };
+      message?: string;
+    };
     console.error('Error generating review summary:', error);
-    return NextResponse.json(
-      { error: 'Internal Server Error' },
-      { status: 500 }
-    );
+    const status = err.status || err.statusCode || 500;
+    const message =
+      err.error?.message || err.message || 'Internal Server Error';
+    return NextResponse.json({ error: message }, { status });
   }
 }

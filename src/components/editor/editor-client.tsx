@@ -178,11 +178,14 @@ export function EditorClient({ document, userPlan }: EditorClientProps) {
         editor.commands.insertContent(chunk);
       }
     } catch (err: unknown) {
-      const errorObj = err as { name?: string };
+      const errorObj = err as { name?: string; message?: string };
       if (errorObj.name === 'AbortError') {
         console.log('[Draft Agent] Stream drafting aborted cleanly by user.');
       } else {
         console.error('[Draft Agent] Stream error:', err);
+        alert(
+          `Draft stream encountered an error: ${errorObj.message || 'The connection was interrupted.'}`
+        );
       }
     } finally {
       setIsDrafting(false);

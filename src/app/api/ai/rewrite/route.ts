@@ -2,8 +2,8 @@ import { NextResponse, NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { gemini } from '@/lib/ai/gemini';
 import { logAiUsageAsync } from '@/lib/ai/logger';
-import { openai } from '@/lib/ai/openai';
 import { REWRITE_SYSTEM_PROMPT, createRewritePrompt } from '@/lib/ai/prompts';
 import { checkRateLimit } from '@/lib/ai/ratelimit';
 import prisma from '@/lib/prisma';
@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
     const validationResult = rewriteRouteSchema.safeParse(parsedJson);
     if (!validationResult.success) {
       return new Response(
-        validationResult.error.issues[0]?.message || 'Invalid input validation error.',
+        validationResult.error.issues[0]?.message ||
+          'Invalid input validation error.',
         {
           status: 400,
         }
@@ -90,24 +91,21 @@ export async function POST(req: NextRequest) {
     const systemPrompt = REWRITE_SYSTEM_PROMPT;
     const userPrompt = createRewritePrompt({ selectedText, tone });
 
-    const model = 'gpt-4o-mini';
+    const model = 'gemini-2.5-flash';
 
-    // 5. OpenAI Chat Completion - non-streaming to avoid layout shifts in the editor
-    const response = await openai.chat.completions.create({
+    // 5. Google Gemini Chat Completion - non-streaming to avoid layout shifts in the editor
+    const response = await gemini.models.generateContent({
       model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      stream: false,
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemPrompt,
+      },
     });
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    const rewritten = response.choices[0]?.message?.content || '';
+    const rewritten = response.text || '';
 
     // 6. Non-blocking token usage logging
     const totalTokens =
-      response.usage?.total_tokens ||
       Math.ceil((rewritten.length + selectedText.length) / 4) + 60;
     logAiUsageAsync(req.url, {
       userId,
@@ -119,9 +117,18 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ rewritten });
   } catch (error) {
+    const err = error as {
+      status?: number;
+      statusCode?: number;
+      error?: { message?: string };
+      message?: string;
+    };
     console.error('[Rewrite Agent] General failure:', error);
-    return new Response('An unexpected internal server error occurred.', {
-      status: 500,
-    });
+    const status = err.status || err.statusCode || 500;
+    const message =
+      err.error?.message ||
+      err.message ||
+      'An unexpected internal server error occurred.';
+    return new Response(message, { status });
   }
 }

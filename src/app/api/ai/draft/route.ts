@@ -2,8 +2,8 @@ import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import { z } from 'zod';
 
+import { gemini } from '@/lib/ai/gemini';
 import { logAiUsageAsync } from '@/lib/ai/logger';
-import { openai } from '@/lib/ai/openai';
 import { DRAFT_SYSTEM_PROMPT, createDraftPrompt } from '@/lib/ai/prompts';
 import { checkRateLimit } from '@/lib/ai/ratelimit';
 import prisma from '@/lib/prisma';
@@ -77,7 +77,8 @@ export async function POST(req: NextRequest) {
     const validationResult = draftRouteSchema.safeParse(parsedJson);
     if (!validationResult.success) {
       return new Response(
-        validationResult.error.issues[0]?.message || 'Invalid input validation error.',
+        validationResult.error.issues[0]?.message ||
+          'Invalid input validation error.',
         {
           status: 400,
         }
@@ -90,16 +91,15 @@ export async function POST(req: NextRequest) {
     const systemPrompt = DRAFT_SYSTEM_PROMPT;
     const userPrompt = createDraftPrompt({ title, instructions });
 
-    const model = 'gpt-4o-mini';
+    const model = 'gemini-2.5-flash';
 
-    // 5. OpenAI Chat Completion with streaming
-    const responseStream = await openai.chat.completions.create({
+    // 5. Google Gemini Chat Completion with streaming
+    const responseStream = await gemini.models.generateContentStream({
       model,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt },
-      ],
-      stream: true,
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemPrompt,
+      },
     });
 
     // 6. Return Streaming Response and track tokens non-blockingly
@@ -110,8 +110,7 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         try {
           for await (const chunk of responseStream) {
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            const content = chunk.choices[0]?.delta?.content || '';
+            const content = chunk.text || '';
             if (content) {
               completeText += content;
               controller.enqueue(encoder.encode(content));
@@ -147,9 +146,18 @@ export async function POST(req: NextRequest) {
       },
     });
   } catch (error) {
+    const err = error as {
+      status?: number;
+      statusCode?: number;
+      error?: { message?: string };
+      message?: string;
+    };
     console.error('[Draft Agent] General failure:', error);
-    return new Response('An unexpected internal server error occurred.', {
-      status: 500,
-    });
+    const status = err.status || err.statusCode || 500;
+    const message =
+      err.error?.message ||
+      err.message ||
+      'An unexpected internal server error occurred.';
+    return new Response(message, { status });
   }
 }
