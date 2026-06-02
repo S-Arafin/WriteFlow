@@ -5,6 +5,7 @@ import {
   ShieldCheck,
   Home,
   FilePenLine,
+  CreditCard,
 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -37,6 +38,7 @@ export default async function DashboardLayout({
     { name: 'My Documents', href: '/dashboard', icon: FileText },
     { name: 'My Profile', href: '/dashboard/profile', icon: UserIcon },
     { name: 'Usage History', href: '/dashboard/usage', icon: BarChart3 },
+    { name: 'Billing & Plans', href: '/dashboard/billing', icon: CreditCard },
   ];
 
   return (
