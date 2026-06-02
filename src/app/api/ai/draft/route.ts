@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { z } from 'zod';
 
 import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
@@ -60,18 +61,30 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 3. Request payload validation
-    const body = await req.json();
-    const { title, instructions } = body;
+    // 3. Request payload validation with Zod
+    let parsedJson: unknown;
+    try {
+      parsedJson = await req.json();
+    } catch {
+      return new Response('Invalid JSON payload.', { status: 400 });
+    }
 
-    if (!title || !instructions) {
+    const draftRouteSchema = z.object({
+      title: z.string().min(1, 'Title is required'),
+      instructions: z.string().min(1, 'Instructions are required'),
+    });
+
+    const validationResult = draftRouteSchema.safeParse(parsedJson);
+    if (!validationResult.success) {
       return new Response(
-        'Missing required fields: title and instructions are required.',
+        validationResult.error.issues[0]?.message || 'Invalid input validation error.',
         {
           status: 400,
         }
       );
     }
+
+    const { title, instructions } = validationResult.data;
 
     // 4. Construct prompt securely using XML injection protections
     const systemPrompt = DRAFT_SYSTEM_PROMPT;

@@ -67,12 +67,12 @@ export default async function AdminDashboardPage() {
   for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().split('T')[0];
+    const key = d.toISOString().substring(0, 10);
     dailyUsageMap.set(key, { tokens: 0, calls: 0 });
   }
 
   usageLogs.forEach((log) => {
-    const key = log.createdAt.toISOString().split('T')[0];
+    const key = log.createdAt.toISOString().substring(0, 10);
     if (dailyUsageMap.has(key)) {
       const val = dailyUsageMap.get(key) || { tokens: 0, calls: 0 };
       val.tokens += log.tokensUsed;
@@ -97,12 +97,12 @@ export default async function AdminDashboardPage() {
   for (let i = 13; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().split('T')[0];
+    const key = d.toISOString().substring(0, 10);
     signupMap.set(key, 0);
   }
 
   newUsers.forEach((user) => {
-    const key = user.createdAt.toISOString().split('T')[0];
+    const key = user.createdAt.toISOString().substring(0, 10);
     if (signupMap.has(key)) {
       const current = signupMap.get(key) ?? 0;
       signupMap.set(key, current + 1);

@@ -11,10 +11,12 @@ const registerSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters'),
 });
 
-export async function registerUser(formData: z.infer<typeof registerSchema>) {
+export async function registerUser(
+  formData: z.infer<typeof registerSchema>
+): Promise<{ success: boolean; error?: string }> {
   const result = registerSchema.safeParse(formData);
   if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
+    return { success: false, error: result.error.issues[0]?.message || 'Invalid data' };
   }
 
   const { email, name, password } = result.data;
@@ -53,7 +55,7 @@ const updateUserProfileSchema = z.object({
 
 export async function updateUserProfile(
   formData: z.infer<typeof updateUserProfileSchema>
-) {
+): Promise<{ success: boolean; error?: string }> {
   const { getServerSession } = await import('next-auth');
   const { authOptions } = await import('@/lib/auth');
   const { revalidatePath } = await import('next/cache');
@@ -65,7 +67,7 @@ export async function updateUserProfile(
 
   const result = updateUserProfileSchema.safeParse(formData);
   if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
+    return { success: false, error: result.error.issues[0]?.message || 'Invalid data' };
   }
 
   try {

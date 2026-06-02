@@ -51,16 +51,24 @@ export function PaginationControls({
       range.push(i);
     }
 
-    if (range[0] - 1 === 2) range.unshift(2);
-    else if (range[0] - 1 > 1) rangeWithDots.push(1, 'ellipsis');
-    else rangeWithDots.push(1);
+    const firstVal = range[0];
+    if (firstVal !== undefined) {
+      if (firstVal - 1 === 2) range.unshift(2);
+      else if (firstVal - 1 > 1) rangeWithDots.push(1, 'ellipsis');
+      else rangeWithDots.push(1);
+    } else {
+      rangeWithDots.push(1);
+    }
 
     rangeWithDots.push(...range);
 
-    if (totalPages - range[range.length - 1] === 2) {
-      range.push(totalPages - 1);
-    } else if (totalPages - range[range.length - 1] > 1) {
-      rangeWithDots.push('ellipsis');
+    const lastVal = range[range.length - 1];
+    if (lastVal !== undefined) {
+      if (totalPages - lastVal === 2) {
+        range.push(totalPages - 1);
+      } else if (totalPages - lastVal > 1) {
+        rangeWithDots.push('ellipsis');
+      }
     }
 
     rangeWithDots.push(totalPages);

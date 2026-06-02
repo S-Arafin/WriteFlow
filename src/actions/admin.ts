@@ -52,7 +52,10 @@ const templateSchema = z.object({
 
 // ─── Admin Role Management Actions ────────────────────────────────────────────
 
-export async function changeUserRole(targetUserId: string, role: UserRole) {
+export async function changeUserRole(
+  targetUserId: string,
+  role: UserRole
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -78,7 +81,9 @@ export async function changeUserRole(targetUserId: string, role: UserRole) {
   }
 }
 
-export async function toggleBan(targetUserId: string) {
+export async function toggleBan(
+  targetUserId: string
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -116,7 +121,9 @@ export async function toggleBan(targetUserId: string) {
 
 // ─── Admin Template CRUD Actions ──────────────────────────────────────────────
 
-export async function upsertTemplate(data: z.infer<typeof templateSchema>) {
+export async function upsertTemplate(
+  data: z.infer<typeof templateSchema>
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -124,7 +131,7 @@ export async function upsertTemplate(data: z.infer<typeof templateSchema>) {
 
   const result = templateSchema.safeParse(data);
   if (!result.success) {
-    return { success: false, error: result.error.issues[0].message };
+    return { success: false, error: result.error.issues[0]?.message || 'Invalid data' };
   }
 
   const { id, ...fields } = result.data;
@@ -164,7 +171,9 @@ export async function upsertTemplate(data: z.infer<typeof templateSchema>) {
   }
 }
 
-export async function deleteTemplate(id: string) {
+export async function deleteTemplate(
+  id: string
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -182,7 +191,9 @@ export async function deleteTemplate(id: string) {
 
 // ─── Admin Review Management Actions ──────────────────────────────────────────
 
-export async function approveReview(reviewId: string) {
+export async function approveReview(
+  reviewId: string
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -227,7 +238,9 @@ export async function approveReview(reviewId: string) {
   }
 }
 
-export async function rejectReview(reviewId: string) {
+export async function rejectReview(
+  reviewId: string
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };
@@ -277,7 +290,7 @@ export async function rejectReview(reviewId: string) {
 export async function updateSiteSettings(
   maintenanceMode: boolean,
   aiEnabled: boolean
-) {
+): Promise<{ success: boolean; error?: string }> {
   const session = await getServerSession(authOptions);
   if (!session || session.user.role !== 'ADMIN') {
     return { success: false, error: 'Unauthorized. Admins only.' };

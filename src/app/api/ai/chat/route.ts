@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
+import { z } from 'zod';
 
 import { logAiUsageAsync } from '@/lib/ai/logger';
 import { openai } from '@/lib/ai/openai';
@@ -65,19 +66,37 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    // 3. Request payload validation
-    const body = (await req.json()) as Record<string, unknown>;
-    const messages = body.messages as ChatInputMessage[] | undefined;
-    const documentContent = body.documentContent as string | undefined;
+    // 3. Request payload validation with Zod
+    let parsedJson: unknown;
+    try {
+      parsedJson = await req.json();
+    } catch {
+      return new Response('Invalid JSON payload.', { status: 400 });
+    }
 
-    if (!messages || !Array.isArray(messages) || messages.length === 0) {
+    const chatRouteSchema = z.object({
+      messages: z
+        .array(
+          z.object({
+            role: z.enum(['user', 'assistant']),
+            content: z.string().min(1, 'Message content cannot be empty'),
+          })
+        )
+        .min(1, 'Messages array is required'),
+      documentContent: z.string().optional().nullable(),
+    });
+
+    const validationResult = chatRouteSchema.safeParse(parsedJson);
+    if (!validationResult.success) {
       return new Response(
-        'Missing required fields: messages array is required.',
+        validationResult.error.issues[0]?.message || 'Invalid input validation error.',
         {
           status: 400,
         }
       );
     }
+
+    const { messages, documentContent } = validationResult.data;
 
     // 4. Strictly enforce context windows
     // Truncate message history to the last 20 messages
@@ -88,6 +107,9 @@ export async function POST(req: NextRequest) {
     // Build the final conversation array for OpenAI.
     // We map the final message to our createChatPrompt prompt with secure XML bounds.
     const lastUserMessage = trimmedHistory[trimmedHistory.length - 1];
+    if (!lastUserMessage) {
+      return new Response('Bad Request: Message history is empty.', { status: 400 });
+    }
     const systemPrompt = CHAT_SYSTEM_PROMPT;
 
     const formattedMessages: {

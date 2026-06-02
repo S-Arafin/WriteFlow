@@ -10,6 +10,7 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
+import Image from 'next/image';
 import React, { useState } from 'react';
 
 import { approveReview, rejectReview } from '@/actions/admin';
@@ -140,13 +141,14 @@ export function ReviewManager({
               >
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
                   <div className="flex items-start gap-3">
-                    <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900 text-slate-400">
+                    <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900 text-slate-400">
                       {r.author.avatarUrl ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
+                        <Image
                           src={r.author.avatarUrl}
                           alt={r.author.name || 'User'}
-                          className="h-full w-full object-cover"
+                          fill
+                          sizes="36px"
+                          className="object-cover"
                         />
                       ) : (
                         <span className="text-xs font-bold">

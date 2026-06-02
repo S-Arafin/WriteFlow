@@ -1,5 +1,6 @@
 import { TemplateCategory } from '@prisma/client';
 import { BookOpen, Star, TrendingUp, Zap } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 
 import { type TemplateListItem } from '@/lib/data/templates';
@@ -75,11 +76,12 @@ export function TemplateCard({ template }: TemplateCardProps) {
       {/* Thumbnail with aspect-ratio lock */}
       <div className="relative aspect-video w-full overflow-hidden">
         {thumbnailUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
+          <Image
             src={thumbnailUrl}
             alt={`${title} template preview`}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+            fill
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
           /* Gradient fallback when no thumbnail is available */

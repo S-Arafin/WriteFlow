@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
 import Link from 'next/link';
+import Image from 'next/image';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import React from 'react';
@@ -148,13 +149,14 @@ export default async function ManageUsersPage({
                   >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900 text-slate-400">
+                        <div className="relative flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900 text-slate-400">
                           {u.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <Image
                               src={u.avatarUrl}
                               alt={u.name || 'User'}
-                              className="h-full w-full object-cover"
+                              fill
+                              sizes="36px"
+                              className="object-cover"
                             />
                           ) : (
                             <Users className="h-4 w-4" />

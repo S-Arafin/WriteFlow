@@ -9,6 +9,7 @@ import {
   Camera,
   Loader2,
 } from 'lucide-react';
+import Image from 'next/image';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -144,11 +145,12 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         <div className="group relative shrink-0">
           <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900/50">
             {avatarPreview ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
+              <Image
                 src={avatarPreview}
                 alt="Avatar"
-                className="h-full w-full object-cover"
+                fill
+                sizes="96px"
+                className="object-cover"
               />
             ) : (
               <User className="h-10 w-10 text-slate-600" />

@@ -12,8 +12,11 @@ import {
 } from 'lucide-react';
 import { type Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
+
+export const revalidate = 86400; // 24-hour cache for individual template detail pages
 
 import { TemplateCard } from '@/components/explore/template-card';
 import { ReviewForm } from '@/components/templates/review-form';
@@ -124,12 +127,13 @@ export default async function TemplateDetailPage({
         <div className="space-y-10 lg:col-span-2">
           {/* Thumbnail */}
           {template.thumbnailUrl ? (
-            <div className="overflow-hidden rounded-2xl">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+            <div className="relative aspect-video w-full overflow-hidden rounded-2xl">
+              <Image
                 src={template.thumbnailUrl}
                 alt={`${template.title} preview`}
-                className="aspect-video w-full object-cover"
+                fill
+                sizes="(max-width: 1024px) 100vw, 768px"
+                className="object-cover"
               />
             </div>
           ) : (
@@ -204,13 +208,14 @@ export default async function TemplateDetailPage({
                   >
                     <div className="mb-3 flex items-start justify-between gap-4">
                       <div className="flex items-center gap-3">
-                        <div className="bg-muted flex size-9 items-center justify-center rounded-full">
+                        <div className="relative bg-muted flex size-9 items-center justify-center overflow-hidden rounded-full">
                           {review.author.avatarUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
+                            <Image
                               src={review.author.avatarUrl}
                               alt={review.author.name ?? 'Reviewer'}
-                              className="size-9 rounded-full object-cover"
+                              fill
+                              sizes="36px"
+                              className="object-cover"
                             />
                           ) : (
                             <User className="text-muted-foreground size-4" />

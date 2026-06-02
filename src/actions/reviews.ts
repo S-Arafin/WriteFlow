@@ -47,7 +47,7 @@ export async function createReview(
   // 2. Input validation
   const parsed = reviewSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0].message };
+    return { success: false, error: parsed.error.issues[0]?.message || 'Invalid data' };
   }
 
   const { templateId, rating, body } = parsed.data;

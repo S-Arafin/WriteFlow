@@ -16,6 +16,8 @@ export const metadata: Metadata = {
     'Browse hundreds of professionally crafted AI content templates for blog posts, social media, email campaigns, and ad copy. Filter by category, rating, and AI model.',
 };
 
+export const revalidate = 3600; // 1-hour ISR cache
+
 // ─── Search Params Parsing ────────────────────────────────────────────────────
 
 const VALID_CATEGORIES = new Set<string>(Object.values(TemplateCategory));
@@ -36,8 +38,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   // Next.js 15 searchParams is a Promise — await it
   const params = await searchParams;
 
-  const raw = (key: string) =>
-    Array.isArray(params[key]) ? params[key][0] : (params[key] ?? '');
+  const raw = (key: string): string => {
+    const val = params[key];
+    if (Array.isArray(val)) {
+      return val[0] ?? '';
+    }
+    return val ?? '';
+  };
 
   const q = raw('q').trim() || undefined;
 

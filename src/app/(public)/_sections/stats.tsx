@@ -32,8 +32,8 @@ export function StatsSection() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        const [entry] = entries;
-        if (entry.isIntersecting && !hasAnimated.current) {
+        const entry = entries[0];
+        if (entry && entry.isIntersecting && !hasAnimated.current) {
           hasAnimated.current = true;
           animateValue(0, 10000, 1500, setUsersCount);
           animateValue(0, 500000, 1500, setWordsCount);
