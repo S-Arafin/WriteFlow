@@ -110,6 +110,7 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         try {
           for await (const chunk of responseStream) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             const content = chunk.choices[0]?.delta?.content || '';
             if (content) {
               completeText += content;

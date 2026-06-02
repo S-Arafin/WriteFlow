@@ -73,6 +73,7 @@ Return your response as a JSON object in this exact format:
       response_format: { type: 'json_object' },
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const resultText = completion.choices[0]?.message?.content || '{}';
     const resultJson = JSON.parse(resultText);
 

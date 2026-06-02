@@ -11,8 +11,8 @@ import {
   Users,
 } from 'lucide-react';
 import { revalidatePath } from 'next/cache';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 import React from 'react';

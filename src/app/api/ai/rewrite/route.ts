@@ -102,6 +102,7 @@ export async function POST(req: NextRequest) {
       stream: false,
     });
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const rewritten = response.choices[0]?.message?.content || '';
 
     // 6. Non-blocking token usage logging

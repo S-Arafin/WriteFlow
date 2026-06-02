@@ -11,8 +11,8 @@ import {
   Zap,
 } from 'lucide-react';
 import { type Metadata } from 'next';
-import Link from 'next/link';
 import Image from 'next/image';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getServerSession } from 'next-auth';
 

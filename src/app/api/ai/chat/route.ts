@@ -15,11 +15,6 @@ export const runtime = 'nodejs';
 
 const secret = process.env.NEXTAUTH_SECRET;
 
-interface ChatInputMessage {
-  role: 'user' | 'assistant';
-  content: string;
-}
-
 /**
  * Edge API Route for Agent 3 (Chat Assistant).
  * Features user session checks, rate limits, history constraints (max 20 messages),
@@ -147,6 +142,7 @@ export async function POST(req: NextRequest) {
       async start(controller) {
         try {
           for await (const chunk of responseStream) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             const content = chunk.choices[0]?.delta?.content || '';
             if (content) {
               completeText += content;
