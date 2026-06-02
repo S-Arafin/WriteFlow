@@ -118,17 +118,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ rewritten });
   } catch (error) {
     const err = error as {
-      status?: number;
+      status?: string;
       statusCode?: number;
-      error?: { message?: string };
+      code?: number;
       message?: string;
     };
     console.error('[Rewrite Agent] General failure:', error);
-    const status = err.status || err.statusCode || 500;
+    const status = typeof err.code === 'number' ? err.code : 500;
     const message =
-      err.error?.message ||
-      err.message ||
-      'An unexpected internal server error occurred.';
+      err.message || 'An unexpected internal server error occurred.';
     return new Response(message, { status });
   }
 }

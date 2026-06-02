@@ -81,15 +81,14 @@ Return your response as a JSON object in this exact format:
     return NextResponse.json(resultJson);
   } catch (error) {
     const err = error as {
-      status?: number;
+      status?: string;
       statusCode?: number;
-      error?: { message?: string };
+      code?: number;
       message?: string;
     };
     console.error('Error generating review summary:', error);
-    const status = err.status || err.statusCode || 500;
-    const message =
-      err.error?.message || err.message || 'Internal Server Error';
+    const status = typeof err.code === 'number' ? err.code : 500;
+    const message = err.message || 'Internal Server Error';
     return NextResponse.json({ error: message }, { status });
   }
 }
