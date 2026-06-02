@@ -88,3 +88,46 @@ export async function updateDocument(
     };
   }
 }
+
+export async function deleteDocument(id: string): Promise<ActionResult> {
+  const { revalidatePath } = await import('next/cache');
+  try {
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+      return {
+        success: false,
+        error: 'You must be signed in to perform this action.',
+      };
+    }
+
+    const document = await prisma.document.findUnique({
+      where: { id },
+      select: { authorId: true },
+    });
+
+    if (!document) {
+      return { success: false, error: 'Document not found.' };
+    }
+
+    if (document.authorId !== session.user.id) {
+      return {
+        success: false,
+        error: 'You do not have permission to delete this document.',
+      };
+    }
+
+    await prisma.document.delete({
+      where: { id },
+    });
+
+    revalidatePath('/dashboard');
+    return { success: true };
+  } catch (error) {
+    console.error('[deleteDocument] Unexpected error:', error);
+    return {
+      success: false,
+      error: 'An internal error occurred while deleting.',
+    };
+  }
+}

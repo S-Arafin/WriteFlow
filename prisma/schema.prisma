@@ -157,3 +157,10 @@ model Account {
 
   @@unique([provider, providerAccountId])
 }
+
+model SiteConfig {
+  id              String   @id @default("singleton")
+  maintenanceMode Boolean  @default(false)
+  aiEnabled       Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}

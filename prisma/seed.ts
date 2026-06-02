@@ -17,6 +17,16 @@ async function main() {
   // Clear existing templates
   await prisma.template.deleteMany({});
 
+  // Seed SiteConfig singleton
+  await prisma.siteConfig.deleteMany({});
+  await prisma.siteConfig.create({
+    data: {
+      id: 'singleton',
+      maintenanceMode: false,
+      aiEnabled: true,
+    },
+  });
+
   // Seed Admin
   await prisma.user.create({
     data: {
