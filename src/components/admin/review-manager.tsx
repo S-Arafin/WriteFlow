@@ -248,8 +248,8 @@ export function ReviewManager({
           </div>
 
           <p className="text-[11px] leading-normal text-slate-500">
-            Generate GPT-powered sentiment summaries and feedback bullet lists
-            based on all approved template reviews.
+            Generate Gemini-powered sentiment summaries and feedback bullet
+            lists based on all approved template reviews.
           </p>
 
           <div className="space-y-2.5 pt-2">

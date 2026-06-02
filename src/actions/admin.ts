@@ -45,7 +45,7 @@ const templateSchema = z.object({
   category: z.enum(['BLOG', 'SOCIAL', 'EMAIL', 'AD_COPY']),
   tone: z.string().optional().nullable(),
   estimatedWords: z.number().int().positive().optional().nullable(),
-  aiModel: z.string().default('gpt-4o-mini'),
+  aiModel: z.string().default('gemini-2.5-flash'),
   isPublished: z.boolean().default(false),
   thumbnailUrl: z.string().optional().nullable(),
 });
@@ -131,7 +131,10 @@ export async function upsertTemplate(
 
   const result = templateSchema.safeParse(data);
   if (!result.success) {
-    return { success: false, error: result.error.issues[0]?.message || 'Invalid data' };
+    return {
+      success: false,
+      error: result.error.issues[0]?.message || 'Invalid data',
+    };
   }
 
   const { id, ...fields } = result.data;
