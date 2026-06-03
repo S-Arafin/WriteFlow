@@ -2,11 +2,11 @@
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Loader2, Send, ArrowLeft, Eye, Edit3 } from 'lucide-react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import Link from 'next/link';
 
 import { createBlogPost } from '@/actions/blog';
 
@@ -24,9 +24,7 @@ const blogFormSchema = z.object({
     .string()
     .min(10, 'Excerpt must be at least 10 characters')
     .max(300, 'Excerpt cannot exceed 300 characters'),
-  content: z
-    .string()
-    .min(50, 'Content must be at least 50 characters'),
+  content: z.string().min(50, 'Content must be at least 50 characters'),
 });
 
 type BlogFormValues = z.infer<typeof blogFormSchema>;
@@ -83,14 +81,16 @@ export function BlogCreateForm() {
       }
     } catch (err) {
       console.error(err);
-      setSubmitError('Failed to publish the post. Please check your connection.');
+      setSubmitError(
+        'Failed to publish the post. Please check your connection.'
+      );
     }
   };
 
   return (
     <div className="space-y-6">
       {/* Tab switchers: Edit vs Preview */}
-      <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+      <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-neutral-800">
         <Link
           href="/blog"
           className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
@@ -99,13 +99,13 @@ export function BlogCreateForm() {
           Back to Blog
         </Link>
 
-        <div className="flex space-x-1 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-0.5">
+        <div className="flex space-x-1 rounded-lg bg-neutral-100 p-0.5 dark:bg-neutral-800">
           <button
             type="button"
             onClick={() => setIsPreview(false)}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${
+            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
               !isPreview
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
+                ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white'
                 : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
@@ -116,9 +116,9 @@ export function BlogCreateForm() {
             type="button"
             disabled={!titleValue && !contentValue}
             onClick={() => setIsPreview(true)}
-            className={`flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-md transition-all disabled:opacity-50 disabled:cursor-not-allowed ${
+            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
               isPreview
-                ? 'bg-white dark:bg-neutral-700 text-neutral-900 dark:text-white shadow-sm'
+                ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white'
                 : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
             }`}
           >
@@ -135,10 +135,17 @@ export function BlogCreateForm() {
       )}
 
       {!isPreview ? (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6" noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6"
+          noValidate
+        >
           {/* Title input */}
           <div className="space-y-1.5">
-            <label htmlFor="blog-title" className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            <label
+              htmlFor="blog-title"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
               Title <span className="text-red-500">*</span>
             </label>
             <input
@@ -146,7 +153,7 @@ export function BlogCreateForm() {
               type="text"
               placeholder="e.g. Architecting High-Performance LLM Systems"
               {...register('title')}
-              className="w-full rounded-xl border border-neutral-200 bg-background px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 transition-colors"
+              className="bg-background w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
             />
             {errors.title && (
               <p className="text-xs text-red-500">{errors.title.message}</p>
@@ -156,13 +163,16 @@ export function BlogCreateForm() {
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             {/* Category selection */}
             <div className="space-y-1.5">
-              <label htmlFor="blog-category" className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+              <label
+                htmlFor="blog-category"
+                className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+              >
                 Category <span className="text-red-500">*</span>
               </label>
               <select
                 id="blog-category"
                 {...register('category')}
-                className="w-full rounded-xl border border-neutral-200 bg-background px-4 py-3 text-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 transition-colors"
+                className="bg-background w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
               >
                 <option value="Workspaces">Workspaces</option>
                 <option value="Governance">Governance</option>
@@ -171,7 +181,9 @@ export function BlogCreateForm() {
                 <option value="Productivity">Productivity</option>
               </select>
               {errors.category && (
-                <p className="text-xs text-red-500">{errors.category.message}</p>
+                <p className="text-xs text-red-500">
+                  {errors.category.message}
+                </p>
               )}
             </div>
 
@@ -180,16 +192,21 @@ export function BlogCreateForm() {
               <label className="block text-sm font-semibold text-neutral-500 dark:text-neutral-400">
                 Estimated Reading Speed
               </label>
-              <div className="w-full rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/20 px-4 py-3 text-sm text-neutral-600 dark:text-neutral-400 flex justify-between items-center select-none font-mono">
+              <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50/50 px-4 py-3 font-mono text-sm text-neutral-600 select-none dark:border-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400">
                 <span>{wordCount} words</span>
-                <span className="text-indigo-600 dark:text-indigo-400 font-semibold">{readTime}</span>
+                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                  {readTime}
+                </span>
               </div>
             </div>
           </div>
 
           {/* Excerpt Textarea */}
           <div className="space-y-1.5">
-            <label htmlFor="blog-excerpt" className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            <label
+              htmlFor="blog-excerpt"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
               Short Summary <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -197,7 +214,7 @@ export function BlogCreateForm() {
               rows={3}
               placeholder="Provide a concise meta description or executive summary of your article..."
               {...register('excerpt')}
-              className="w-full rounded-xl border border-neutral-200 bg-background px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 transition-colors resize-none"
+              className="bg-background w-full resize-none rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
             />
             {errors.excerpt && (
               <p className="text-xs text-red-500">{errors.excerpt.message}</p>
@@ -206,7 +223,10 @@ export function BlogCreateForm() {
 
           {/* Content Textarea */}
           <div className="space-y-1.5">
-            <label htmlFor="blog-content" className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200">
+            <label
+              htmlFor="blog-content"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
               Content Markdown <span className="text-red-500">*</span>
             </label>
             <textarea
@@ -214,7 +234,7 @@ export function BlogCreateForm() {
               rows={12}
               placeholder="Write your article body here. Markdown spacing and standard linebreaks are fully preserved..."
               {...register('content')}
-              className="w-full rounded-xl border border-neutral-200 bg-background px-4 py-3 text-sm placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400 transition-colors resize-y font-sans leading-relaxed"
+              className="bg-background w-full resize-y rounded-xl border border-neutral-200 px-4 py-3 font-sans text-sm leading-relaxed transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
             />
             {errors.content && (
               <p className="text-xs text-red-500">{errors.content.message}</p>
@@ -222,12 +242,12 @@ export function BlogCreateForm() {
           </div>
 
           {/* Submit Action */}
-          <div className="flex justify-end pt-4 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="flex justify-end border-t border-neutral-100 pt-4 dark:border-neutral-800">
             <button
               id="submit-blog-post"
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/10 hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-60 transition-all hover:scale-[1.02] active:scale-95"
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/10 transition-all hover:scale-[1.02] hover:bg-indigo-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {isSubmitting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -240,16 +260,16 @@ export function BlogCreateForm() {
         </form>
       ) : (
         /* Preview UI */
-        <div className="space-y-8 animate-fade-in">
+        <div className="animate-fade-in space-y-8">
           <div className="space-y-4">
-            <span className="inline-flex rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
+            <span className="inline-flex rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
               {categoryValue}
             </span>
-            <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white sm:text-4xl leading-tight">
+            <h1 className="text-3xl leading-tight font-extrabold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
               {titleValue || 'Untitled Post'}
             </h1>
-            
-            <div className="flex flex-wrap items-center gap-6 text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+
+            <div className="flex flex-wrap items-center gap-6 font-mono text-xs text-neutral-500 dark:text-neutral-400">
               <div>Draft Mode</div>
               <div className="flex items-center space-x-1">
                 <span>{readTime}</span>
@@ -258,13 +278,14 @@ export function BlogCreateForm() {
           </div>
 
           {excerptValue && (
-            <p className="text-base font-medium leading-relaxed text-neutral-700 dark:text-neutral-300 italic border-l-4 border-indigo-500 pl-4 bg-neutral-50 dark:bg-neutral-900/10 py-2 pr-2 rounded-r-md">
+            <p className="rounded-r-md border-l-4 border-indigo-500 bg-neutral-50 py-2 pr-2 pl-4 text-base leading-relaxed font-medium text-neutral-700 italic dark:bg-neutral-900/10 dark:text-neutral-300">
               {excerptValue}
             </p>
           )}
 
-          <div className="prose prose-neutral dark:prose-invert max-w-none text-sm leading-relaxed text-neutral-800 dark:text-neutral-300 space-y-6 whitespace-pre-wrap pt-4">
-            {contentValue || 'No content drafted yet. Use the Edit tab to write some content.'}
+          <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6 pt-4 text-sm leading-relaxed whitespace-pre-wrap text-neutral-800 dark:text-neutral-300">
+            {contentValue ||
+              'No content drafted yet. Use the Edit tab to write some content.'}
           </div>
         </div>
       )}

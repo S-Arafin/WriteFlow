@@ -1,8 +1,8 @@
 'use server';
 
 import { ReviewStatus } from '@prisma/client';
-import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
+import { getServerSession } from 'next-auth';
 import { z } from 'zod';
 
 import { authOptions } from '@/lib/auth';
@@ -48,7 +48,10 @@ export async function createReview(
   // 2. Input validation
   const parsed = reviewSchema.safeParse(input);
   if (!parsed.success) {
-    return { success: false, error: parsed.error.issues[0]?.message || 'Invalid data' };
+    return {
+      success: false,
+      error: parsed.error.issues[0]?.message || 'Invalid data',
+    };
   }
 
   const { templateId, rating, body } = parsed.data;

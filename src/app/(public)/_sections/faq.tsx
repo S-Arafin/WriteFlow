@@ -1,7 +1,7 @@
 'use client';
 
-import React from 'react';
 import { motion } from 'framer-motion';
+import React from 'react';
 
 import {
   Accordion,
@@ -35,14 +35,14 @@ export function FAQSection() {
   ];
 
   return (
-    <section className="border-y border-neutral-200 dark:border-neutral-900 bg-neutral-50/50 dark:bg-neutral-900/40 px-4 py-20 transition-colors duration-300">
+    <section className="border-y border-neutral-200 bg-neutral-50/50 px-4 py-20 transition-colors duration-300 dark:border-neutral-900 dark:bg-neutral-900/40">
       <div className="container mx-auto max-w-3xl space-y-12">
         {/* Header */}
         <div className="space-y-3 text-center">
-          <span className="text-xs font-bold tracking-widest text-indigo-600 dark:text-indigo-500 uppercase">
+          <span className="text-xs font-bold tracking-widest text-indigo-600 uppercase dark:text-indigo-500">
             Support
           </span>
-          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
             Frequently Asked Questions
           </h2>
         </div>
@@ -60,9 +60,9 @@ export function FAQSection() {
               <AccordionItem
                 key={idx}
                 value={`item-${idx}`}
-                className="rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white/70 dark:bg-neutral-950/60 px-5 py-0.5 shadow-sm"
+                className="rounded-xl border border-neutral-200 bg-white/70 px-5 py-0.5 shadow-sm dark:border-neutral-800 dark:bg-neutral-950/60"
               >
-                <AccordionTrigger className="py-4 text-sm font-semibold text-neutral-900 dark:text-white transition-colors hover:text-indigo-600 dark:hover:text-indigo-400 hover:no-underline">
+                <AccordionTrigger className="py-4 text-sm font-semibold text-neutral-900 transition-colors hover:text-indigo-600 hover:no-underline dark:text-white dark:hover:text-indigo-400">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent className="pt-1 pb-4 text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
