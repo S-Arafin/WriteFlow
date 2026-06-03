@@ -2,6 +2,7 @@
 
 import { ReviewStatus } from '@prisma/client';
 import { getServerSession } from 'next-auth';
+import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 import { authOptions } from '@/lib/auth';
@@ -57,7 +58,7 @@ export async function createReview(
     // 3. Confirm the template exists and is published
     const template = await prisma.template.findUnique({
       where: { id: templateId, isPublished: true },
-      select: { id: true },
+      select: { id: true, slug: true },
     });
 
     if (!template) {
@@ -71,11 +72,18 @@ export async function createReview(
       data: {
         rating,
         body: body?.trim() || null,
-        status: ReviewStatus.PENDING,
+        status: ReviewStatus.APPROVED,
         authorId,
         templateId,
       },
     });
+
+    // 5. Instantly recalculate template average rating
+    await recalculateTemplateRating(templateId);
+
+    // 6. Revalidate the template pages so updates show instantly
+    revalidatePath(`/templates/${template.slug}`);
+    revalidatePath('/explore');
 
     return { success: true };
   } catch (err: unknown) {

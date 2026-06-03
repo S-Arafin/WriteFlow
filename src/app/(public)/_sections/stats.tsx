@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { Users, FileText, CheckCircle2 } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
 
@@ -58,47 +59,65 @@ export function StatsSection() {
   return (
     <section
       ref={containerRef}
-      className="border-y border-neutral-900 bg-neutral-900/40 px-4 py-16"
+      className="border-y border-neutral-200 dark:border-neutral-900 bg-neutral-50/50 dark:bg-neutral-900/40 px-4 py-16 transition-colors duration-300"
     >
       <div className="container mx-auto grid max-w-5xl grid-cols-1 gap-8 text-center md:grid-cols-3">
         {/* Metric 1 */}
-        <div className="flex flex-col items-center space-y-2 p-6">
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0 }}
+          className="flex flex-col items-center space-y-2 p-6"
+        >
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
             <Users className="h-5 w-5" />
           </div>
-          <span className="text-4xl font-extrabold tracking-tight text-white">
+          <span className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
             {usersCount.toLocaleString()}+
           </span>
-          <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+          <span className="text-xs font-semibold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
             Active Writers & Teams
           </span>
-        </div>
+        </motion.div>
 
         {/* Metric 2 */}
-        <div className="flex flex-col items-center space-y-2 p-6">
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="flex flex-col items-center space-y-2 p-6"
+        >
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
             <FileText className="h-5 w-5" />
           </div>
-          <span className="text-4xl font-extrabold tracking-tight text-white">
+          <span className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
             {wordsCount.toLocaleString()}+
           </span>
-          <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+          <span className="text-xs font-semibold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
             Words Drafted & Optimized
           </span>
-        </div>
+        </motion.div>
 
         {/* Metric 3 */}
-        <div className="flex flex-col items-center space-y-2 p-6">
-          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="flex flex-col items-center space-y-2 p-6"
+        >
+          <div className="mb-2 flex h-10 w-10 items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
             <CheckCircle2 className="h-5 w-5" />
           </div>
-          <span className="text-4xl font-extrabold tracking-tight text-white">
+          <span className="text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
             {accuracyRate}%
           </span>
-          <span className="text-xs font-semibold tracking-wider text-neutral-400 uppercase">
+          <span className="text-xs font-semibold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
             Context Fidelity Rating
           </span>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

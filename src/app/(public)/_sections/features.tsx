@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import { PenTool, Shuffle, Users } from 'lucide-react';
 import React from 'react';
 
@@ -24,16 +27,16 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section className="border-y border-neutral-900 bg-neutral-900/40 px-4 py-20">
+    <section className="border-y border-neutral-200 dark:border-neutral-900 bg-neutral-50/50 dark:bg-neutral-900/40 px-4 py-20 transition-colors duration-300">
       <div className="container mx-auto max-w-5xl space-y-12">
         {/* Headers */}
         <div className="space-y-3 text-center">
-          <h2 className="text-xs font-bold tracking-widest text-indigo-500 uppercase">
+          <span className="text-xs font-bold tracking-widest text-indigo-600 dark:text-indigo-500 uppercase">
             Advanced Features
-          </h2>
-          <p className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
             Engineered For High-Velocity Creators
-          </p>
+          </h2>
         </div>
 
         {/* Responsive Grid */}
@@ -41,21 +44,25 @@ export function FeaturesSection() {
           {features.map((feature, idx) => {
             const Icon = feature.icon;
             return (
-              <div
+              <motion.div
                 key={idx}
-                className="flex flex-col space-y-4 rounded-xl border border-neutral-800/80 bg-neutral-950/60 p-6 backdrop-blur transition-colors hover:border-neutral-700/80"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.5, delay: idx * 0.1 }}
+                className="flex flex-col space-y-4 rounded-xl border border-neutral-200 dark:border-neutral-800/80 bg-white/70 dark:bg-neutral-950/60 p-6 backdrop-blur shadow-sm transition-all duration-300 hover:border-indigo-500/50 dark:hover:border-indigo-500/50 hover:shadow-lg dark:hover:shadow-indigo-500/5 hover:-translate-y-1"
               >
                 {/* Icon Wrapper */}
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-400">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg border border-indigo-500/20 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400">
                   <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="text-lg font-bold tracking-tight text-white">
+                <h3 className="text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
                   {feature.title}
                 </h3>
-                <p className="text-xs leading-relaxed text-neutral-400">
+                <p className="text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
                   {feature.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>

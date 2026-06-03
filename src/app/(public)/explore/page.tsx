@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     'Browse hundreds of professionally crafted AI content templates for blog posts, social media, email campaigns, and ad copy. Filter by category, rating, and AI model.',
 };
 
-export const revalidate = 3600; // 1-hour ISR cache
+export const revalidate = 3650; // ~1-hour ISR cache
 
 // ─── Search Params Parsing ────────────────────────────────────────────────────
 
@@ -76,31 +76,26 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
   const hasActiveFilters = !!(q ?? category ?? minRating);
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-12 font-sans">
       {/* ── Page Header ────────────────────────────────────────────────────── */}
-      <div className="mb-10">
-        <div className="mb-2 flex items-center gap-2">
-          <LayoutGrid className="size-5 text-indigo-400" />
-          <h1 className="text-foreground text-3xl font-bold tracking-tight">
+      <div className="mb-10 space-y-2">
+        <div className="flex items-center gap-2">
+          <LayoutGrid className="size-5 text-indigo-650 dark:text-indigo-400" />
+          <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white uppercase font-mono">
             Explore Templates
           </h1>
         </div>
-        <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
-          Discover professionally crafted AI prompts for every content format.
-          Filter by category, sort by usage or rating, and launch your next
-          piece in seconds.
+        <p className="text-neutral-500 dark:text-neutral-400 max-w-xl text-sm leading-relaxed font-medium">
+          Discover professionally crafted AI prompts for every content format. Filter by category, sort by usage or rating, and launch your next piece in seconds.
         </p>
       </div>
 
       {/* ── Main Layout ────────────────────────────────────────────────────── */}
       <div className="flex flex-col gap-8 lg:flex-row">
-        {/*
-         * FilterSidebar is a Client Component (uses useSearchParams + useRouter).
-         * Wrap in Suspense so the RSC page shell can stream independently.
-         */}
+        {/* FilterSidebar */}
         <Suspense
           fallback={
-            <aside className="bg-muted hidden h-96 w-64 animate-pulse rounded-xl lg:block" />
+            <aside className="bg-neutral-100 dark:bg-neutral-900 hidden h-96 w-64 animate-pulse rounded-[2rem] lg:block" />
           }
         >
           <FilterSidebar />
@@ -109,13 +104,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         {/* ── Results Column ──────────────────────────────────────────────── */}
         <section className="min-w-0 flex-1">
           {/* Results count */}
-          <div className="text-muted-foreground mb-6 flex items-center justify-between text-sm">
+          <div className="text-neutral-500 dark:text-neutral-400 mb-6 flex items-center justify-between text-xs font-mono font-semibold uppercase tracking-wider">
             <span>
               {total === 0 ? (
                 'No templates found'
               ) : (
                 <>
-                  <span className="text-foreground font-semibold">{total}</span>{' '}
+                  <span className="text-neutral-800 dark:text-white font-bold">{total}</span>{' '}
                   template{total !== 1 ? 's' : ''} found
                 </>
               )}
@@ -124,13 +119,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
           {/* ── Empty State ─────────────────────────────────────────────── */}
           {templates.length === 0 && (
-            <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
-              <SearchX className="text-muted-foreground/40 size-14" />
+            <div className="flex flex-col items-center justify-center gap-4 py-24 text-center rounded-[2rem] border border-neutral-250 bg-white/50 dark:border-neutral-850 dark:bg-neutral-900/10 shadow-sm">
+              <SearchX className="text-neutral-400 dark:text-neutral-600 size-14" />
               <div>
-                <p className="text-foreground font-semibold">
+                <p className="text-neutral-900 dark:text-white font-bold text-lg">
                   No templates match your filters
                 </p>
-                <p className="text-muted-foreground mt-1 text-sm">
+                <p className="text-neutral-550 dark:text-neutral-450 mt-1 text-sm">
                   {hasActiveFilters
                     ? 'Try broadening your search or clearing some filters.'
                     : 'No published templates are available yet. Check back soon.'}

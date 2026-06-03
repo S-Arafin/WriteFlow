@@ -5,6 +5,7 @@ import {
   Coins,
   ChevronLeft,
   ChevronRight,
+  Compass,
 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
@@ -73,63 +74,54 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
       value: monthlyTokensUsed.toLocaleString(),
       description: 'Used since beginning of current month',
       icon: Coins,
-      color: 'text-teal-400',
-      bgColor: 'bg-teal-500/10 border-teal-500/20',
     },
     {
       name: 'Lifetime Tokens Used',
       value: totalTokensUsed.toLocaleString(),
       description: 'Total historical generation volume',
       icon: Cpu,
-      color: 'text-violet-400',
-      bgColor: 'bg-violet-500/10 border-violet-500/20',
     },
     {
       name: 'Total AI Interactions',
       value: totalCount.toLocaleString(),
       description: 'Number of times agent queries completed',
       icon: BarChart3,
-      color: 'text-emerald-400',
-      bgColor: 'bg-emerald-500/10 border-emerald-500/20',
     },
   ];
 
   return (
     <div className="space-y-8 font-sans">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white uppercase font-mono">
           AI Usage History
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
-          Review your real-time agent completions, prompt snippets, and token
-          balances.
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+          Review your real-time agent completions, prompt snippets, and token balances.
         </p>
       </div>
 
-      {/* Aggregate Cards */}
+      {/* Aggregate Bento Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.name}
-              className="space-y-4 rounded-2xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl"
+              className="space-y-4 rounded-[2rem] border border-neutral-200 dark:border-neutral-850 bg-white/70 dark:bg-neutral-900/30 p-6 backdrop-blur-md shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <span className="text-xs font-mono font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
                   {stat.name}
                 </span>
-                <div
-                  className={`rounded-xl border p-2 ${stat.bgColor} ${stat.color}`}
-                >
+                <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-2 text-indigo-600 dark:text-indigo-400">
                   <Icon className="h-4 w-4" />
                 </div>
               </div>
               <div>
-                <p className="text-3xl font-extrabold text-white">
+                <p className="text-3xl font-extrabold text-neutral-900 dark:text-white">
                   {stat.value}
                 </p>
-                <p className="mt-1 text-xs leading-normal text-slate-400">
+                <p className="mt-1 text-xs leading-normal text-neutral-550 dark:text-neutral-400">
                   {stat.description}
                 </p>
               </div>
@@ -138,34 +130,34 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
         })}
       </div>
 
-      {/* Usage Logs Table */}
+      {/* Usage Logs Bento list table */}
       {usageLogs.length === 0 ? (
-        <div className="space-y-4 rounded-3xl border border-slate-900 bg-slate-900/10 py-16 text-center backdrop-blur-sm">
-          <div className="inline-flex rounded-2xl border border-slate-800 bg-slate-900/50 p-4 text-slate-500">
+        <div className="space-y-6 rounded-[2rem] border border-neutral-200 dark:border-neutral-850 bg-white/50 dark:bg-neutral-900/10 py-16 text-center backdrop-blur-sm shadow-sm">
+          <div className="inline-flex rounded-2xl border border-neutral-200 dark:border-neutral-850 bg-neutral-100 dark:bg-neutral-900/50 p-4 text-neutral-450 dark:text-neutral-550 shadow-sm">
             <Clock className="h-8 w-8" />
           </div>
-          <div>
-            <h3 className="text-lg font-bold text-slate-200">
+          <div className="space-y-1">
+            <h3 className="text-xl font-bold text-neutral-900 dark:text-white">
               No usage logs recorded
             </h3>
-            <p className="mx-auto mt-1 max-w-sm text-sm leading-relaxed text-slate-500">
-              Your AI usage logs will update in real-time as you compose drafts,
-              rewrite content, and talk with the AI assistant.
+            <p className="mx-auto max-w-sm text-sm leading-relaxed text-neutral-550 dark:text-neutral-450">
+              Your AI usage logs will update in real-time as you compose drafts, rewrite content, and talk with the AI assistant.
             </p>
           </div>
           <Link
             href="/explore"
-            className="inline-flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-950 px-4 py-2 text-xs font-semibold text-slate-300 transition-colors hover:border-slate-700 hover:text-white"
+            className="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-5 py-3 text-xs font-semibold text-white hover:bg-indigo-500 shadow-md shadow-indigo-600/10"
           >
-            Explore AI Templates
+            <Compass className="h-4 w-4" />
+            <span>Explore AI Templates</span>
           </Link>
         </div>
       ) : (
         <div className="space-y-6">
-          <div className="overflow-x-auto rounded-2xl border border-slate-900 bg-slate-950/40 backdrop-blur-xl">
+          <div className="overflow-x-auto rounded-[2rem] border border-neutral-200 dark:border-neutral-850 bg-white/50 dark:bg-neutral-950/40 backdrop-blur-xl shadow-sm overflow-hidden">
             <table className="w-full border-collapse text-left">
               <thead>
-                <tr className="border-b border-slate-900 text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <tr className="border-b border-neutral-200 dark:border-neutral-850/80 text-[10px] font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase bg-neutral-50/50 dark:bg-neutral-900/20">
                   <th className="px-6 py-4">Timestamp</th>
                   <th className="px-6 py-4">Agent Type</th>
                   <th className="px-6 py-4">Generative Model</th>
@@ -173,13 +165,13 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                   <th className="px-6 py-4">Prompt Snippet</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-900 text-sm">
+              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-850 text-sm">
                 {usageLogs.map((log) => (
                   <tr
                     key={log.id}
-                    className="group transition-colors hover:bg-slate-900/10"
+                    className="group transition-colors hover:bg-neutral-100/30 dark:hover:bg-neutral-900/20"
                   >
-                    <td className="px-6 py-4 text-slate-400">
+                    <td className="px-6 py-4 text-neutral-600 dark:text-neutral-400 font-mono text-xs">
                       {new Date(log.createdAt).toLocaleString('en-US', {
                         month: 'short',
                         day: 'numeric',
@@ -189,28 +181,28 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                     </td>
                     <td className="px-6 py-4">
                       <span
-                        className={`inline-flex rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        className={`inline-flex rounded-md border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
                           log.agentType === 'DRAFT'
-                            ? 'border-teal-900/30 bg-teal-950/30 text-teal-400'
+                            ? 'border-indigo-150 bg-indigo-50 text-indigo-600 dark:border-indigo-900/20 dark:bg-indigo-950/30 dark:text-indigo-400'
                             : log.agentType === 'REWRITE'
-                              ? 'border-violet-900/30 bg-violet-950/30 text-violet-400'
+                              ? 'border-purple-200 bg-purple-50 text-purple-600 dark:border-purple-900/20 dark:bg-purple-950/30 dark:text-purple-400'
                               : log.agentType === 'CHAT'
-                                ? 'border-amber-900/30 bg-amber-950/30 text-amber-400'
-                                : 'border-emerald-900/30 bg-emerald-950/30 text-emerald-400'
+                                ? 'border-amber-200 bg-amber-50 text-amber-600 dark:border-amber-900/20 dark:bg-amber-950/30 dark:text-amber-400'
+                                : 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-900/20 dark:bg-emerald-950/30 dark:text-emerald-400'
                         }`}
                       >
                         {log.agentType}
                       </span>
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs text-slate-300">
+                    <td className="px-6 py-4 font-mono text-xs text-neutral-700 dark:text-neutral-300">
                       {log.model}
                     </td>
-                    <td className="px-6 py-4 font-mono text-xs font-bold text-slate-200">
+                    <td className="px-6 py-4 font-mono text-xs font-bold text-neutral-800 dark:text-neutral-200">
                       {log.tokensUsed.toLocaleString()} tokens
                     </td>
-                    <td className="max-w-xs truncate px-6 py-4 font-mono text-xs text-slate-400">
+                    <td className="max-w-xs truncate px-6 py-4 font-mono text-xs text-neutral-650 dark:text-neutral-400">
                       {log.promptSnippet || (
-                        <span className="text-slate-600 italic">
+                        <span className="text-neutral-400 dark:text-neutral-650 italic">
                           No prompt details
                         </span>
                       )}
@@ -223,11 +215,11 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between border-t border-slate-900 pt-6">
-              <p className="text-xs text-slate-500">
+            <div className="flex items-center justify-between border-t border-neutral-100 dark:border-neutral-900 pt-6">
+              <p className="text-xs text-neutral-550 dark:text-neutral-400">
                 Showing Page{' '}
-                <span className="font-semibold text-slate-300">{page}</span> of{' '}
-                <span className="font-semibold text-slate-300">
+                <span className="font-semibold text-neutral-700 dark:text-neutral-350">{page}</span> of{' '}
+                <span className="font-semibold text-neutral-700 dark:text-neutral-350">
                   {totalPages}
                 </span>{' '}
                 ({totalCount} total logs)
@@ -237,7 +229,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                 {page > 1 ? (
                   <Link
                     href={`/dashboard/usage?page=${page - 1}`}
-                    className="inline-flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200"
+                    className="inline-flex items-center gap-1 rounded-xl border border-neutral-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-650 transition-colors hover:border-neutral-350 hover:text-neutral-800 dark:border-neutral-850 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-200"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
                     <span>Prev</span>
@@ -245,7 +237,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                 ) : (
                   <button
                     disabled
-                    className="inline-flex cursor-not-allowed items-center gap-1 rounded-xl border border-slate-900 bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-slate-700"
+                    className="inline-flex cursor-not-allowed items-center gap-1 rounded-xl border border-neutral-100 bg-white/30 px-3.5 py-1.5 text-xs font-semibold text-neutral-300 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-700"
                   >
                     <ChevronLeft className="h-3.5 w-3.5" />
                     <span>Prev</span>
@@ -255,7 +247,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                 {page < totalPages ? (
                   <Link
                     href={`/dashboard/usage?page=${page + 1}`}
-                    className="inline-flex items-center gap-1 rounded-xl border border-slate-800 bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-slate-400 transition-colors hover:border-slate-700 hover:text-slate-200"
+                    className="inline-flex items-center gap-1 rounded-xl border border-neutral-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-neutral-650 transition-colors hover:border-neutral-350 hover:text-neutral-800 dark:border-neutral-850 dark:bg-neutral-950 dark:text-neutral-400 dark:hover:text-neutral-200"
                   >
                     <span>Next</span>
                     <ChevronRight className="h-3.5 w-3.5" />
@@ -263,7 +255,7 @@ export default async function UsagePage({ searchParams }: UsagePageProps) {
                 ) : (
                   <button
                     disabled
-                    className="inline-flex cursor-not-allowed items-center gap-1 rounded-xl border border-slate-900 bg-slate-950 px-3.5 py-1.5 text-xs font-semibold text-slate-700"
+                    className="inline-flex cursor-not-allowed items-center gap-1 rounded-xl border border-neutral-100 bg-white/30 px-3.5 py-1.5 text-xs font-semibold text-neutral-300 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-700"
                   >
                     <span>Next</span>
                     <ChevronRight className="h-3.5 w-3.5" />

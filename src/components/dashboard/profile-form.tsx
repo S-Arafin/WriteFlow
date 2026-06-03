@@ -127,23 +127,23 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       {/* Messages */}
       {error && (
-        <div className="flex items-center gap-3 rounded-xl border border-red-900/30 bg-red-950/20 p-4 text-sm text-red-400">
+        <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-600 dark:text-red-400">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-900/30 bg-emerald-950/20 p-4 text-sm text-emerald-400">
+        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-600 dark:text-emerald-400">
           <CheckCircle className="h-4 w-4 shrink-0" />
           <span>Profile changes saved successfully!</span>
         </div>
       )}
 
       {/* Profile Header & Avatar Selector */}
-      <div className="flex flex-col items-center gap-6 border-b border-slate-900 pb-6 sm:flex-row">
+      <div className="flex flex-col items-center gap-6 border-b border-neutral-200 dark:border-neutral-900 pb-6 sm:flex-row">
         <div className="group relative shrink-0">
-          <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-slate-800 bg-slate-900/50">
+          <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900/50">
             {avatarPreview ? (
               <Image
                 src={avatarPreview}
@@ -153,18 +153,18 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
                 className="object-cover"
               />
             ) : (
-              <User className="h-10 w-10 text-slate-600" />
+              <User className="h-10 w-10 text-neutral-450 dark:text-neutral-500" />
             )}
 
             {/* Loading Overlay */}
             {isUploading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-950/80">
-                <Loader2 className="h-6 w-6 animate-spin text-teal-400" />
+              <div className="absolute inset-0 flex items-center justify-center bg-white/80 dark:bg-neutral-950/80">
+                <Loader2 className="h-6 w-6 animate-spin text-indigo-600 dark:text-indigo-400" />
               </div>
             )}
           </div>
 
-          <label className="absolute -right-1 -bottom-1 cursor-pointer rounded-full bg-teal-500 p-2 text-slate-950 shadow-lg transition-all group-hover:scale-105 hover:bg-teal-400 active:scale-95">
+          <label className="absolute -right-1 -bottom-1 cursor-pointer rounded-full bg-indigo-600 p-2 text-white shadow-lg transition-all group-hover:scale-105 hover:bg-indigo-500 active:scale-95">
             <Camera className="h-3.5 w-3.5" />
             <input
               type="file"
@@ -177,16 +177,16 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         </div>
 
         <div className="space-y-1 text-center sm:text-left">
-          <h2 className="flex items-center justify-center gap-2 text-xl font-bold text-white sm:justify-start">
+          <h2 className="flex items-center justify-center gap-2 text-xl font-bold text-neutral-900 dark:text-white sm:justify-start">
             <span>{initialUser.name || 'Writer'}</span>
-            <span className="inline-flex rounded border border-teal-900 bg-teal-950 px-2 py-0.5 text-[10px] font-bold tracking-wider text-teal-400 uppercase">
+            <span className="inline-flex rounded border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
               {initialUser.plan} Tier
             </span>
           </h2>
-          <p className="font-mono text-xs text-slate-500">
+          <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
             {initialUser.email}
           </p>
-          <p className="mt-1 max-w-sm text-xs text-slate-400">
+          <p className="mt-1 max-w-sm text-xs text-neutral-550 dark:text-neutral-450">
             Click the camera icon to upload a custom avatar directly to the
             WriteFlow CDN network.
           </p>
@@ -196,7 +196,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
       {/* Form Fields */}
       <div className="space-y-4">
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-wider text-slate-400 uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase font-mono">
             Display Name
           </label>
           <input
@@ -204,15 +204,15 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
             {...register('name')}
             disabled={isSubmitting}
             placeholder="Your full name"
-            className="w-full rounded-xl border border-slate-800 bg-slate-950/50 px-4 py-2.5 text-sm text-slate-200 transition-colors placeholder:text-slate-600 focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/50 focus:outline-none"
+            className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400 transition-colors"
           />
           {errors.name && (
-            <p className="mt-1 text-xs text-red-400">{errors.name.message}</p>
+            <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
           )}
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-wider text-slate-400 uppercase">
+          <label className="mb-2 block text-xs font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase font-mono">
             Short Bio
           </label>
           <textarea
@@ -220,10 +220,10 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
             disabled={isSubmitting}
             rows={4}
             placeholder="Tell us about yourself or your writing workflow..."
-            className="w-full resize-none rounded-xl border border-slate-800 bg-slate-950/50 px-4 py-2.5 text-sm text-slate-200 transition-colors placeholder:text-slate-600 focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/50 focus:outline-none"
+            className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400 transition-colors"
           />
           {errors.bio && (
-            <p className="mt-1 text-xs text-red-400">{errors.bio.message}</p>
+            <p className="mt-1 text-xs text-red-500">{errors.bio.message}</p>
           )}
         </div>
       </div>
@@ -233,7 +233,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         <button
           type="submit"
           disabled={isSubmitting || isUploading}
-          className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 px-6 py-2.5 text-sm font-bold text-slate-950 shadow-lg shadow-teal-500/10 transition-all hover:from-teal-400 hover:to-emerald-400 hover:shadow-teal-500/20 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl bg-lime-400 hover:bg-lime-300 dark:bg-lime-300 dark:hover:bg-lime-200 px-6 py-2.5 text-sm font-bold text-neutral-950 shadow-md shadow-lime-400/10 transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? (
             <>

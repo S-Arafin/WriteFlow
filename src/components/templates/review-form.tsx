@@ -75,7 +75,7 @@ export function ReviewForm({ templateId, isAuthenticated }: ReviewFormProps) {
     return (
       <div className="border-border rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-6 text-center">
         <p className="text-sm font-medium text-emerald-400">
-          ✓ Review submitted and pending approval. Thank you!
+          ✓ Review submitted successfully. Thank you!
         </p>
       </div>
     );

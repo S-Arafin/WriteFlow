@@ -82,36 +82,36 @@ export default async function ProfilePage() {
   return (
     <div className="max-w-4xl space-y-8 font-sans">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white uppercase font-mono">
           My Profile
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400 font-medium">
           Monitor your workspace metrics and modify your profile details.
         </p>
       </div>
 
-      {/* Aggregate Stats Cards */}
+      {/* Aggregate Stats Bento Cards */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
             <div
               key={stat.name}
-              className="space-y-4 rounded-2xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl"
+              className="space-y-4 rounded-[2rem] border border-neutral-200 dark:border-neutral-850 bg-white/70 dark:bg-neutral-900/30 p-6 backdrop-blur-md shadow-sm"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold tracking-wider text-slate-500 uppercase">
+                <span className="text-xs font-mono font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase">
                   {stat.name}
                 </span>
-                <div className="rounded-xl border border-teal-500/20 bg-teal-500/10 p-2 text-teal-400">
+                <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/10 p-2 text-indigo-600 dark:text-indigo-400">
                   <Icon className="h-4 w-4" />
                 </div>
               </div>
               <div>
-                <p className="text-3xl font-extrabold text-white">
+                <p className="text-3xl font-extrabold text-neutral-900 dark:text-white">
                   {stat.value}
                 </p>
-                <p className="mt-1 text-xs leading-normal text-slate-400">
+                <p className="mt-1 text-xs leading-normal text-neutral-550 dark:text-neutral-400">
                   {stat.description}
                 </p>
               </div>
@@ -120,8 +120,8 @@ export default async function ProfilePage() {
         })}
       </div>
 
-      {/* Profile Form Details */}
-      <div className="rounded-3xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl sm:p-8">
+      {/* Profile Form Details Bento block */}
+      <div className="rounded-[2.5rem] border border-neutral-200 dark:border-neutral-850 bg-white/75 dark:bg-neutral-900/20 p-6 sm:p-8 backdrop-blur-xl shadow-sm">
         <ProfileForm initialUser={user} />
       </div>
     </div>

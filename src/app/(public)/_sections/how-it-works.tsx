@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import { Sliders, Zap, CheckCircle } from 'lucide-react';
 import React from 'react';
 
@@ -27,16 +30,16 @@ export function HowItWorksSection() {
   ];
 
   return (
-    <section className="bg-neutral-950 px-4 py-20">
+    <section className="bg-background px-4 py-20 transition-colors duration-300">
       <div className="container mx-auto max-w-5xl space-y-16">
         {/* Header */}
         <div className="space-y-3 text-center">
-          <h2 className="text-xs font-bold tracking-widest text-indigo-500 uppercase">
+          <span className="text-xs font-bold tracking-widest text-indigo-600 dark:text-indigo-500 uppercase">
             Workflow
-          </h2>
-          <p className="text-2xl font-bold tracking-tight text-white sm:text-4xl">
+          </span>
+          <h2 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
             How WriteFlow Fuels Momentum
-          </p>
+          </h2>
         </div>
 
         {/* Steps Grid */}
@@ -44,30 +47,34 @@ export function HowItWorksSection() {
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
-              <div
+              <motion.div
                 key={idx}
-                className="relative flex flex-col items-center space-y-4 text-center"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                className="relative flex flex-col items-center space-y-4 text-center group"
               >
                 {/* Connecting Line (Only visible on larger screens) */}
                 {idx < 2 && (
-                  <div className="pointer-events-none absolute top-7 right-[-40%] left-[60%] hidden h-[1px] bg-neutral-800 md:block" />
+                  <div className="pointer-events-none absolute top-7 right-[-40%] left-[60%] hidden h-[1px] bg-neutral-200 dark:bg-neutral-800 md:block transition-colors duration-300" />
                 )}
 
                 {/* Step Circle */}
-                <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-800 bg-neutral-900 text-indigo-400">
+                <div className="relative z-10 flex h-14 w-14 items-center justify-center rounded-full border border-neutral-200 bg-white text-indigo-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-indigo-400 shadow-sm transition-all duration-300 group-hover:scale-110 group-hover:border-indigo-500/50">
                   <Icon className="h-6 w-6" />
-                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white">
+                  <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-indigo-600 text-[10px] font-bold text-white shadow-sm">
                     {step.step}
                   </span>
                 </div>
 
-                <h3 className="pt-2 text-lg font-bold tracking-tight text-white">
+                <h3 className="pt-2 text-lg font-bold tracking-tight text-neutral-900 dark:text-white">
                   {step.title}
                 </h3>
-                <p className="max-w-xs text-xs leading-relaxed text-neutral-400">
+                <p className="max-w-xs text-sm leading-relaxed text-neutral-600 dark:text-neutral-400">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
             );
           })}
         </div>
