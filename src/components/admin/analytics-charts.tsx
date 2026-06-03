@@ -1,6 +1,7 @@
 'use client';
 
-import React from 'react';
+import { useTheme } from 'next-themes';
+import React, { useEffect, useState } from 'react';
 import {
   ResponsiveContainer,
   BarChart,
@@ -38,24 +39,42 @@ interface AnalyticsChartsProps {
   categoryDistribution: CategoryDistributionData[];
 }
 
-const COLORS = ['#2dd4bf', '#a78bfa', '#f43f5e', '#34d399'];
+const COLORS = ['#10b981', '#6366f1', '#a855f7', '#f59e0b'];
 
 interface CustomTooltipProps {
   active?: boolean;
   payload?: Array<{ name: string; value: number; color?: string }>;
   label?: string;
+  isDark?: boolean;
 }
 
 // Custom Glassmorphic Tooltip Component
-const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
+const CustomTooltip = ({
+  active,
+  payload,
+  label,
+  isDark,
+}: CustomTooltipProps) => {
   if (active && payload && payload.length) {
     return (
-      <div className="space-y-1 rounded-xl border border-slate-800 bg-slate-950/90 p-4 text-xs shadow-2xl backdrop-blur-xl">
-        <p className="font-bold text-slate-200">{label}</p>
+      <div
+        className={`space-y-1 rounded-2xl border p-4 text-xs shadow-xl backdrop-blur-xl transition-all ${
+          isDark
+            ? 'text-neutral-250 border-neutral-800 bg-neutral-950/90'
+            : 'border-neutral-200 bg-white/95 text-neutral-800'
+        }`}
+      >
+        <p className="font-mono font-bold">{label}</p>
         {payload.map((item, idx) => (
-          <p key={idx} style={{ color: item.color }} className="font-mono">
+          <p
+            key={idx}
+            style={{ color: item.color }}
+            className="font-mono font-semibold"
+          >
             {item.name}:{' '}
-            <span className="font-bold text-slate-100">
+            <span
+              className={`font-bold ${isDark ? 'text-white' : 'text-neutral-900'}`}
+            >
               {item.value.toLocaleString()}
             </span>
           </p>
@@ -68,25 +87,37 @@ const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
 
 export function AnalyticsCharts({
   dailyUsage,
-  dailyUsage: _ignoredUsage,
   userSignups,
   categoryDistribution,
 }: AnalyticsChartsProps) {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  // Avoid SSR hydration flash for dynamic themes
+  const isDark = mounted ? resolvedTheme === 'dark' : true;
+  const gridStroke = isDark ? '#1f1f1f' : '#e5e5e5';
+  const tickStroke = isDark ? '#737373' : '#a3a3a3';
+
   return (
     <div className="grid grid-cols-1 gap-8 font-sans lg:grid-cols-2">
       {/* Daily AI Token Volume (Bar Chart) */}
-      <div className="space-y-4 rounded-3xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl">
+      <div className="dark:border-neutral-850 space-y-4 rounded-[2rem] border border-neutral-200 bg-white/70 p-6 shadow-sm backdrop-blur-xl dark:bg-neutral-900/10">
         <div>
-          <h3 className="text-base font-bold text-white">
+          <h3 className="font-mono text-base font-bold text-neutral-900 uppercase dark:text-white">
             Daily AI Usage Volume
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="text-neutral-550 mt-1 text-xs font-medium dark:text-neutral-400">
             Aggregated tokens consumed by all agents over the last 14 days
           </p>
         </div>
         <div className="h-80 w-full">
           {dailyUsage.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-xs text-slate-600 italic">
+            <div className="flex h-full items-center justify-center text-xs text-neutral-500 italic">
               No daily AI usage logs recorded in database.
             </div>
           ) : (
@@ -97,28 +128,28 @@ export function AnalyticsCharts({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#0f172a"
+                  stroke={gridStroke}
                   vertical={false}
                 />
                 <XAxis
                   dataKey="date"
-                  stroke="#475569"
+                  stroke={tickStroke}
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#475569"
+                  stroke={tickStroke}
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip isDark={isDark} />} />
                 <Bar
                   name="Tokens Consumed"
                   dataKey="tokens"
-                  fill="#2dd4bf"
+                  fill="#10b981"
                   radius={[4, 4, 0, 0]}
                   maxBarSize={40}
                 />
@@ -129,18 +160,18 @@ export function AnalyticsCharts({
       </div>
 
       {/* User Signup Trends (Line Chart) */}
-      <div className="space-y-4 rounded-3xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl">
+      <div className="dark:border-neutral-850 space-y-4 rounded-[2rem] border border-neutral-200 bg-white/70 p-6 shadow-sm backdrop-blur-xl dark:bg-neutral-900/10">
         <div>
-          <h3 className="text-base font-bold text-white">
+          <h3 className="font-mono text-base font-bold text-neutral-900 uppercase dark:text-white">
             User Registration Rate
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="text-neutral-550 mt-1 text-xs font-medium dark:text-neutral-400">
             Daily user accounts generated over the last 14 days
           </p>
         </div>
         <div className="h-80 w-full">
           {userSignups.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-xs text-slate-600 italic">
+            <div className="flex h-full items-center justify-center text-xs text-neutral-500 italic">
               No daily user signups recorded in database.
             </div>
           ) : (
@@ -151,31 +182,35 @@ export function AnalyticsCharts({
               >
                 <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#0f172a"
+                  stroke={gridStroke}
                   vertical={false}
                 />
                 <XAxis
                   dataKey="date"
-                  stroke="#475569"
+                  stroke={tickStroke}
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
                 />
                 <YAxis
-                  stroke="#475569"
+                  stroke={tickStroke}
                   fontSize={10}
                   tickLine={false}
                   axisLine={false}
                   allowDecimals={false}
                 />
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<CustomTooltip isDark={isDark} />} />
                 <Line
                   name="New Users"
                   type="monotone"
                   dataKey="count"
-                  stroke="#a78bfa"
+                  stroke="#6366f1"
                   strokeWidth={3}
-                  dot={{ r: 4, strokeWidth: 1, fill: '#090d16' }}
+                  dot={{
+                    r: 4,
+                    strokeWidth: 1,
+                    fill: isDark ? '#000000' : '#ffffff',
+                  }}
                   activeDot={{ r: 6 }}
                 />
               </LineChart>
@@ -185,18 +220,18 @@ export function AnalyticsCharts({
       </div>
 
       {/* Content Category Distribution (Pie Chart) */}
-      <div className="space-y-4 rounded-3xl border border-slate-900 bg-slate-900/10 p-6 backdrop-blur-xl lg:col-span-2">
+      <div className="dark:border-neutral-850 space-y-4 rounded-[2rem] border border-neutral-200 bg-white/70 p-6 shadow-sm backdrop-blur-xl lg:col-span-2 dark:bg-neutral-900/10">
         <div>
-          <h3 className="text-base font-bold text-white">
+          <h3 className="font-mono text-base font-bold text-neutral-900 uppercase dark:text-white">
             Category Distribution
           </h3>
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="text-neutral-550 mt-1 text-xs font-medium dark:text-neutral-400">
             Active content volume divided across core category tags
           </p>
         </div>
         <div className="flex h-80 w-full flex-col items-center justify-around gap-6 md:flex-row">
           {categoryDistribution.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-xs text-slate-600 italic">
+            <div className="flex h-full items-center justify-center text-xs text-neutral-500 italic">
               No category metrics currently available in database.
             </div>
           ) : (
@@ -220,27 +255,27 @@ export function AnalyticsCharts({
                         />
                       ))}
                     </Pie>
-                    <Tooltip content={<CustomTooltip />} />
+                    <Tooltip content={<CustomTooltip isDark={isDark} />} />
                   </PieChart>
                 </ResponsiveContainer>
               </div>
 
-              {/* Custom Legend to match glassmorphic aesthetics */}
+              {/* Custom Legend */}
               <div className="grid w-full max-w-sm shrink-0 grid-cols-2 gap-4">
                 {categoryDistribution.map((entry, index) => (
                   <div
                     key={entry.name}
-                    className="flex items-center gap-3 rounded-2xl border border-slate-900 bg-slate-950/40 p-3"
+                    className="dark:border-neutral-850 flex items-center gap-3 rounded-2xl border border-neutral-200 bg-neutral-50/50 p-3 shadow-sm dark:bg-neutral-950/40"
                   >
                     <div
                       className="h-3 w-3 shrink-0 rounded-full"
                       style={{ backgroundColor: COLORS[index % COLORS.length] }}
                     />
                     <div>
-                      <p className="text-[10px] font-bold tracking-wider text-slate-500 uppercase">
+                      <p className="dark:text-neutral-450 font-mono text-[10px] font-bold tracking-wider text-neutral-500 uppercase">
                         {entry.name}
                       </p>
-                      <p className="mt-0.5 text-lg font-extrabold text-slate-200">
+                      <p className="mt-0.5 text-lg font-extrabold text-neutral-900 dark:text-neutral-200">
                         {entry.value.toLocaleString()}
                       </p>
                     </div>

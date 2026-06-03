@@ -24,7 +24,7 @@ export function Footer() {
           {/* Social Icons */}
           <div className="flex space-x-4 pt-2">
             <a
-              href="https://github.com/S-Arafin/WriteFlow"
+              href="https://github.com/S-Arafin"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
@@ -43,22 +43,7 @@ export function Footer() {
               </svg>
             </a>
             <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-              aria-label="Twitter"
-            >
-              <svg
-                className="h-4 w-4 fill-current"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-              </svg>
-            </a>
-            <a
-              href="https://linkedin.com"
+              href="https://www.linkedin.com/in/sultanul-arafin/"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-foreground transition-colors"
@@ -176,7 +161,7 @@ export function Footer() {
             <MapPin className="h-3.5 w-3.5" /> Silicon Valley, CA
           </span>
           <span className="flex items-center gap-1">
-            <Phone className="h-3.5 w-3.5" /> +1 (555) 019-2834
+            <Phone className="h-3.5 w-3.5" /> +8801979817736
           </span>
         </div>
       </div>

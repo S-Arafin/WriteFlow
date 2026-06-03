@@ -63,6 +63,8 @@ model User {
   usageLogs      UsageLog[]
   accounts       Account[]
   blogPosts      BlogPost[]
+  blogVotes      BlogVote[]
+  blogReports    BlogReport[]
 
   @@index([email])
   @@index([role, createdAt])
@@ -167,17 +169,60 @@ model SiteConfig {
 }
 
 model BlogPost {
-  id        String   @id @default(uuid())
-  slug      String   @unique
-  category  String
-  readTime  String
-  title     String
-  excerpt   String
-  content   String   @db.Text
-  date      String
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
+  id             String       @id @default(uuid())
+  slug           String       @unique
+  category       String
+  readTime       String
+  title          String
+  excerpt        String
+  content        String       @db.Text
+  date           String
+  authorId       String
+  author         User         @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  upvotesCount   Int          @default(0)
+  downvotesCount Int          @default(0)
+  reportsCount   Int          @default(0)
+  createdAt      DateTime     @default(now())
+
+  votes          BlogVote[]
+  reports        BlogReport[]
 
   @@index([createdAt])
 }
+
+enum VoteType {
+  UPVOTE
+  DOWNVOTE
+}
+
+model BlogVote {
+  id         String   @id @default(uuid())
+  type       VoteType
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blogPostId String
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, blogPostId])
+  @@index([blogPostId])
+}
+
+model BlogReport {
+  id         String   @id @default(uuid())
+  reason     String   @db.Text
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blogPostId String
+  blogPost   BlogPost @relation(fields: [blogPostId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([blogPostId])
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+}
+

@@ -23,12 +23,12 @@ export default async function ManageTemplatesPage() {
   });
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-8 font-sans transition-colors duration-300">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight text-white">
+        <h1 className="font-mono text-3xl font-extrabold tracking-tight text-neutral-900 uppercase dark:text-white">
           Manage Templates
         </h1>
-        <p className="mt-1 text-sm text-slate-400">
+        <p className="text-neutral-555 mt-1 text-sm font-medium dark:text-neutral-400">
           Configure workspace AI instructions, model parameters, and tones.
         </p>
       </div>

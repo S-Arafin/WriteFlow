@@ -60,7 +60,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
     },
   });
 
-  // ─── Direct-to-CDN Avatar Upload Flow ───────────────────────────────────────
+  // ─── Direct Imgbb Avatar Upload Flow ────────────────────────────────────────
   async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -70,34 +70,24 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
     setIsUploading(true);
 
     try {
-      // 1. Fetch Presigned URL details from our Edge gateway
-      const presignRes = await fetch('/api/avatar/presign', {
+      const uploadFormData = new FormData();
+      uploadFormData.append('file', file);
+
+      const uploadRes = await fetch('/api/avatar/upload', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      });
-
-      if (!presignRes.ok) {
-        throw new Error('Failed to obtain presigned upload URL.');
-      }
-
-      const { uploadUrl, publicUrl } = await presignRes.json();
-
-      // 2. Perform direct upload to CDN/Storage Endpoint
-      const uploadRes = await fetch(uploadUrl, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': file.type,
-        },
+        body: uploadFormData,
       });
 
       if (!uploadRes.ok) {
-        throw new Error('CDN Upload rejected your request.');
+        const errData = (await uploadRes.json()) as { error?: string };
+        throw new Error(errData.error || 'Failed to upload avatar image.');
       }
 
-      // 3. Update form fields and visual previews
-      setValue('avatarUrl', publicUrl);
-      setAvatarPreview(publicUrl);
+      const { url } = (await uploadRes.json()) as { url: string };
+
+      // Update form fields and visual previews
+      setValue('avatarUrl', url);
+      setAvatarPreview(url);
       setSuccess(true);
     } catch (err: unknown) {
       console.error(err);
@@ -141,7 +131,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
       )}
 
       {/* Profile Header & Avatar Selector */}
-      <div className="flex flex-col items-center gap-6 border-b border-neutral-200 dark:border-neutral-900 pb-6 sm:flex-row">
+      <div className="flex flex-col items-center gap-6 border-b border-neutral-200 pb-6 sm:flex-row dark:border-neutral-900">
         <div className="group relative shrink-0">
           <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900/50">
             {avatarPreview ? (
@@ -153,7 +143,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
                 className="object-cover"
               />
             ) : (
-              <User className="h-10 w-10 text-neutral-450 dark:text-neutral-500" />
+              <User className="text-neutral-450 h-10 w-10 dark:text-neutral-500" />
             )}
 
             {/* Loading Overlay */}
@@ -177,16 +167,16 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         </div>
 
         <div className="space-y-1 text-center sm:text-left">
-          <h2 className="flex items-center justify-center gap-2 text-xl font-bold text-neutral-900 dark:text-white sm:justify-start">
+          <h2 className="flex items-center justify-center gap-2 text-xl font-bold text-neutral-900 sm:justify-start dark:text-white">
             <span>{initialUser.name || 'Writer'}</span>
-            <span className="inline-flex rounded border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-indigo-600 dark:text-indigo-400 uppercase">
+            <span className="inline-flex rounded border border-indigo-500/20 bg-indigo-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
               {initialUser.plan} Tier
             </span>
           </h2>
           <p className="font-mono text-xs text-neutral-500 dark:text-neutral-400">
             {initialUser.email}
           </p>
-          <p className="mt-1 max-w-sm text-xs text-neutral-550 dark:text-neutral-450">
+          <p className="text-neutral-550 dark:text-neutral-450 mt-1 max-w-sm text-xs">
             Click the camera icon to upload a custom avatar directly to the
             WriteFlow CDN network.
           </p>
@@ -196,7 +186,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
       {/* Form Fields */}
       <div className="space-y-4">
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase font-mono">
+          <label className="mb-2 block font-mono text-xs font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
             Display Name
           </label>
           <input
@@ -204,7 +194,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
             {...register('name')}
             disabled={isSubmitting}
             placeholder="Your full name"
-            className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400 transition-colors"
+            className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400"
           />
           {errors.name && (
             <p className="mt-1 text-xs text-red-500">{errors.name.message}</p>
@@ -212,7 +202,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         </div>
 
         <div>
-          <label className="mb-2 block text-xs font-bold tracking-wider text-neutral-500 dark:text-neutral-400 uppercase font-mono">
+          <label className="mb-2 block font-mono text-xs font-bold tracking-wider text-neutral-500 uppercase dark:text-neutral-400">
             Short Bio
           </label>
           <textarea
@@ -220,7 +210,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
             disabled={isSubmitting}
             rows={4}
             placeholder="Tell us about yourself or your writing workflow..."
-            className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400 transition-colors"
+            className="w-full resize-none rounded-xl border border-neutral-200 bg-white px-4 py-2.5 text-sm text-neutral-900 transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:bg-neutral-950/50 dark:text-neutral-200 dark:placeholder:text-neutral-600 dark:focus:border-indigo-400"
           />
           {errors.bio && (
             <p className="mt-1 text-xs text-red-500">{errors.bio.message}</p>
@@ -233,7 +223,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         <button
           type="submit"
           disabled={isSubmitting || isUploading}
-          className="inline-flex items-center gap-2 rounded-xl bg-lime-400 hover:bg-lime-300 dark:bg-lime-300 dark:hover:bg-lime-200 px-6 py-2.5 text-sm font-bold text-neutral-950 shadow-md shadow-lime-400/10 transition-all hover:scale-105 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex items-center gap-2 rounded-xl bg-lime-400 px-6 py-2.5 text-sm font-bold text-neutral-950 shadow-md shadow-lime-400/10 transition-all hover:scale-105 hover:bg-lime-300 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 dark:bg-lime-300 dark:hover:bg-lime-200"
         >
           {isSubmitting ? (
             <>

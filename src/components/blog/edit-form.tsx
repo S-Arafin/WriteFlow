@@ -1,0 +1,303 @@
+'use client';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Loader2, Save, ArrowLeft, Eye, Edit3 } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+
+import { updateBlogPost } from '@/actions/blog';
+
+const blogFormSchema = z.object({
+  title: z
+    .string()
+    .min(5, 'Title must be at least 5 characters')
+    .max(100, 'Title cannot exceed 100 characters'),
+  category: z
+    .string()
+    .min(2, 'Category must be at least 2 characters')
+    .max(30, 'Category cannot exceed 30 characters'),
+  excerpt: z
+    .string()
+    .min(10, 'Excerpt must be at least 10 characters')
+    .max(300, 'Excerpt cannot exceed 300 characters'),
+  content: z.string().min(50, 'Content must be at least 50 characters'),
+});
+
+type BlogFormValues = z.infer<typeof blogFormSchema>;
+
+interface BlogEditFormProps {
+  postId: string;
+  initialData: {
+    title: string;
+    category: string;
+    excerpt: string;
+    content: string;
+    slug: string;
+  };
+}
+
+export function BlogEditForm({ postId, initialData }: BlogEditFormProps) {
+  const router = useRouter();
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [wordCount, setWordCount] = useState(0);
+  const [readTime, setReadTime] = useState('1 min read');
+  const [isPreview, setIsPreview] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<BlogFormValues>({
+    resolver: zodResolver(blogFormSchema),
+    defaultValues: {
+      title: initialData.title,
+      category: initialData.category,
+      excerpt: initialData.excerpt,
+      content: initialData.content,
+    },
+  });
+
+  const contentValue = watch('content');
+  const titleValue = watch('title');
+  const categoryValue = watch('category');
+  const excerptValue = watch('excerpt');
+
+  useEffect(() => {
+    if (!contentValue) {
+      setWordCount(0);
+      setReadTime('1 min read');
+      return;
+    }
+    const words = contentValue.trim().split(/\s+/).filter(Boolean).length;
+    setWordCount(words);
+    const minutes = Math.max(1, Math.ceil(words / 225));
+    setReadTime(`${minutes} min read`);
+  }, [contentValue]);
+
+  const onSubmit = async (data: BlogFormValues) => {
+    setSubmitError(null);
+    try {
+      const result = await updateBlogPost(postId, data);
+      if (result.success && result.slug) {
+        router.push(`/blog/${result.slug}`);
+        router.refresh();
+      } else {
+        setSubmitError(result.error ?? 'An unexpected error occurred.');
+      }
+    } catch (err) {
+      console.error(err);
+      setSubmitError(
+        'Failed to update the post. Please check your connection.'
+      );
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Tab switchers: Edit vs Preview */}
+      <div className="flex items-center justify-between border-b border-neutral-200 pb-4 dark:border-neutral-800">
+        <Link
+          href={`/blog/${initialData.slug}`}
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-xs transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Cancel Edit
+        </Link>
+
+        <div className="flex space-x-1 rounded-lg bg-neutral-100 p-0.5 dark:bg-neutral-800">
+          <button
+            type="button"
+            onClick={() => setIsPreview(false)}
+            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
+              !isPreview
+                ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white'
+                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+            }`}
+          >
+            <Edit3 className="h-3 w-3" />
+            Edit
+          </button>
+          <button
+            type="button"
+            disabled={!titleValue && !contentValue}
+            onClick={() => setIsPreview(true)}
+            className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
+              isPreview
+                ? 'bg-white text-neutral-900 shadow-sm dark:bg-neutral-700 dark:text-white'
+                : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
+            }`}
+          >
+            <Eye className="h-3 w-3" />
+            Preview
+          </button>
+        </div>
+      </div>
+
+      {submitError && (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-600 dark:text-red-400">
+          {submitError}
+        </div>
+      )}
+
+      {!isPreview ? (
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="space-y-6"
+          noValidate
+        >
+          {/* Title input */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="blog-title"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
+              Title <span className="text-red-500">*</span>
+            </label>
+            <input
+              id="blog-title"
+              type="text"
+              placeholder="e.g. Architecting High-Performance LLM Systems"
+              {...register('title')}
+              className="bg-background w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+            />
+            {errors.title && (
+              <p className="text-xs text-red-500">{errors.title.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {/* Category selection */}
+            <div className="space-y-1.5">
+              <label
+                htmlFor="blog-category"
+                className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+              >
+                Category <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="blog-category"
+                {...register('category')}
+                className="bg-background w-full rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+              >
+                <option value="Workspaces">Workspaces</option>
+                <option value="Governance">Governance</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Analytics">Analytics</option>
+                <option value="Productivity">Productivity</option>
+              </select>
+              {errors.category && (
+                <p className="text-xs text-red-500">
+                  {errors.category.message}
+                </p>
+              )}
+            </div>
+
+            {/* Read Time Info */}
+            <div className="space-y-1.5">
+              <label className="block text-sm font-semibold text-neutral-500 dark:text-neutral-400">
+                Estimated Reading Speed
+              </label>
+              <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-neutral-50/50 px-4 py-3 font-mono text-sm text-neutral-600 select-none dark:border-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400">
+                <span>{wordCount} words</span>
+                <span className="font-semibold text-indigo-600 dark:text-indigo-400">
+                  {readTime}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* Excerpt Textarea */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="blog-excerpt"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
+              Short Summary <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="blog-excerpt"
+              rows={3}
+              placeholder="Provide a concise meta description or executive summary of your article..."
+              {...register('excerpt')}
+              className="bg-background w-full resize-none rounded-xl border border-neutral-200 px-4 py-3 text-sm transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+            />
+            {errors.excerpt && (
+              <p className="text-xs text-red-500">{errors.excerpt.message}</p>
+            )}
+          </div>
+
+          {/* Content Textarea */}
+          <div className="space-y-1.5">
+            <label
+              htmlFor="blog-content"
+              className="block text-sm font-semibold text-neutral-800 dark:text-neutral-200"
+            >
+              Content Markdown <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="blog-content"
+              rows={12}
+              placeholder="Write your article body here. Markdown spacing and standard linebreaks are fully preserved..."
+              {...register('content')}
+              className="bg-background w-full resize-y rounded-xl border border-neutral-200 px-4 py-3 font-sans text-sm leading-relaxed transition-colors placeholder:text-neutral-400 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 focus:outline-none dark:border-neutral-800 dark:focus:border-indigo-400 dark:focus:ring-indigo-400"
+            />
+            {errors.content && (
+              <p className="text-xs text-red-500">{errors.content.message}</p>
+            )}
+          </div>
+
+          {/* Submit Action */}
+          <div className="flex justify-end border-t border-neutral-100 pt-4 dark:border-neutral-800">
+            <button
+              id="submit-blog-post"
+              type="submit"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-indigo-600/10 transition-all hover:scale-[1.02] hover:bg-indigo-500 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4" />
+              )}
+              {isSubmitting ? 'Saving Changes…' : 'Save Changes'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        /* Preview UI */
+        <div className="animate-fade-in space-y-8">
+          <div className="space-y-4">
+            <span className="inline-flex rounded-full border border-indigo-500/20 bg-indigo-500/10 px-3 py-1 text-xs font-semibold tracking-wider text-indigo-600 uppercase dark:text-indigo-400">
+              {categoryValue}
+            </span>
+            <h1 className="text-3xl leading-tight font-extrabold tracking-tight text-neutral-900 sm:text-4xl dark:text-white">
+              {titleValue || 'Untitled Post'}
+            </h1>
+
+            <div className="flex flex-wrap items-center gap-6 font-mono text-xs text-neutral-500 dark:text-neutral-400">
+              <div>Draft Mode</div>
+              <div className="flex items-center space-x-1">
+                <span>{readTime}</span>
+              </div>
+            </div>
+          </div>
+
+          {excerptValue && (
+            <p className="rounded-r-md border-l-4 border-indigo-500 bg-neutral-50 py-2 pr-2 pl-4 text-base leading-relaxed font-medium text-neutral-700 italic dark:bg-neutral-900/10 dark:text-neutral-300">
+              {excerptValue}
+            </p>
+          )}
+
+          <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6 pt-4 text-sm leading-relaxed whitespace-pre-wrap text-neutral-800 dark:text-neutral-300">
+            {contentValue ||
+              'No content drafted yet. Use the Edit tab to write some content.'}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

@@ -28,10 +28,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html
+      lang="en"
+      className={`${plusJakartaSans.variable} ${geistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body
         suppressHydrationWarning
-        className={`${plusJakartaSans.variable} ${geistMono.variable} bg-background text-foreground min-h-screen font-sans antialiased`}
+        className="bg-background text-foreground min-h-screen font-sans antialiased"
       >
         <AuthProvider>
           <ThemeProvider
