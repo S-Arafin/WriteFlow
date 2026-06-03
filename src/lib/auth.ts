@@ -55,6 +55,7 @@ export const authOptions: NextAuthOptions = {
           name: user.name,
           role: user.role,
           plan: user.plan,
+          image: user.avatarUrl,
         };
       },
     }),
@@ -66,14 +67,16 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.role = user.role;
         token.plan = user.plan;
+        token.image = user.image;
       } else if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { plan: true, role: true },
+          select: { plan: true, role: true, avatarUrl: true },
         });
         if (dbUser) {
           token.role = dbUser.role;
           token.plan = dbUser.plan;
+          token.image = dbUser.avatarUrl;
         }
       }
       return token;
@@ -82,6 +85,7 @@ export const authOptions: NextAuthOptions = {
       session.user.id = token.id as string;
       session.user.role = token.role as 'USER' | 'ADMIN';
       session.user.plan = token.plan as PlanType;
+      session.user.image = token.image as string | null;
       return session;
     },
   },

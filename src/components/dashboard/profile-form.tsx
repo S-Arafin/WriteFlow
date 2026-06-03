@@ -41,6 +41,7 @@ interface ProfileFormProps {
 export function ProfileForm({ initialUser }: ProfileFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
+  const [avatarUploaded, setAvatarUploaded] = useState<boolean>(false);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(
     initialUser.avatarUrl
@@ -67,6 +68,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
 
     setError(null);
     setSuccess(false);
+    setAvatarUploaded(false);
     setIsUploading(true);
 
     try {
@@ -88,7 +90,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
       // Update form fields and visual previews
       setValue('avatarUrl', url);
       setAvatarPreview(url);
-      setSuccess(true);
+      setAvatarUploaded(true);
     } catch (err: unknown) {
       console.error(err);
       const errorMsg =
@@ -102,6 +104,7 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
   async function onSubmit(data: ProfileFormValues) {
     setError(null);
     setSuccess(false);
+    setAvatarUploaded(false);
 
     const res = await updateUserProfile(data);
     if (!res.success) {
@@ -122,7 +125,6 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
           <span>{error}</span>
         </div>
       )}
-
       {success && (
         <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-sm text-emerald-600 dark:text-emerald-400">
           <CheckCircle className="h-4 w-4 shrink-0" />
@@ -130,7 +132,16 @@ export function ProfileForm({ initialUser }: ProfileFormProps) {
         </div>
       )}
 
-      {/* Profile Header & Avatar Selector */}
+      {avatarUploaded && (
+        <div className="flex items-center gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 text-sm text-indigo-600 dark:text-indigo-400">
+          <CheckCircle className="h-4 w-4 shrink-0" />
+          <span>
+            New avatar uploaded! Click &quot;Save Changes&quot; at the bottom of
+            the page to apply to your profile.
+          </span>
+        </div>
+      )}
+
       <div className="flex flex-col items-center gap-6 border-b border-neutral-200 pb-6 sm:flex-row dark:border-neutral-900">
         <div className="group relative shrink-0">
           <div className="relative flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border border-neutral-200 bg-neutral-100/50 dark:border-neutral-800 dark:bg-neutral-900/50">

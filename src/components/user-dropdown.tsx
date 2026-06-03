@@ -1,6 +1,7 @@
 'use client';
 
 import { LogOut, LayoutDashboard } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { signOut } from 'next-auth/react';
 import React from 'react';
@@ -37,10 +38,20 @@ export function UserDropdown({ user }: UserDropdownProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border border-indigo-500/20 bg-indigo-600/10 text-xs font-semibold text-indigo-400 transition-all hover:border-indigo-500 hover:text-white" />
+          <button className="relative flex h-8 w-8 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-indigo-500/20 bg-indigo-600/10 text-xs font-semibold text-indigo-400 transition-all hover:border-indigo-500 hover:text-white" />
         }
       >
-        {getInitials(user.name)}
+        {user.image ? (
+          <Image
+            src={user.image}
+            alt={user.name || 'User'}
+            fill
+            sizes="32px"
+            className="object-cover"
+          />
+        ) : (
+          getInitials(user.name)
+        )}
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align="end"

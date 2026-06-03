@@ -19,27 +19,34 @@ export async function POST(req: NextRequest) {
 
     const imgbbKey = process.env.IMGBB_API_KEY;
     if (!imgbbKey || imgbbKey === 'placeholder') {
-      // Fallback in case no key is configured yet: assign a beautiful premium mock choice
-      const avatars = [
-        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=256&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=256&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=256&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=256&auto=format&fit=crop',
-        'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?q=80&w=256&auto=format&fit=crop',
-      ];
-      const mockUrl = avatars[Math.floor(Math.random() * avatars.length)];
-      return NextResponse.json({ url: mockUrl });
+      console.warn(
+        '[Avatar Upload]: IMGBB_API_KEY is not set or is set to placeholder.'
+      );
+      return NextResponse.json(
+        {
+          error:
+            'Imgbb API key is not configured in your .env file. Please set IMGBB_API_KEY.',
+        },
+        { status: 400 }
+      );
     }
 
-    // Build the Imgbb Multipart payload
-    const uploadFormData = new FormData();
-    uploadFormData.append('image', file);
+    // Convert file to base64 for highly reliable transmission to Imgbb
+    const arrayBuffer = await file.arrayBuffer();
+    const base64Image = Buffer.from(arrayBuffer).toString('base64');
+
+    // Build the Imgbb payload using urlencoded form data as specified in Imgbb API docs
+    const uploadFormData = new URLSearchParams();
+    uploadFormData.append('image', base64Image);
 
     const response = await fetch(
       `https://api.imgbb.com/1/upload?key=${imgbbKey}`,
       {
         method: 'POST',
-        body: uploadFormData,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: uploadFormData.toString(),
       }
     );
 
@@ -47,7 +54,7 @@ export async function POST(req: NextRequest) {
       const errorText = await response.text();
       console.error('[Imgbb API error]:', errorText);
       return NextResponse.json(
-        { error: 'Imgbb upload rejected.' },
+        { error: 'Imgbb upload rejected. Check API key validity.' },
         { status: 502 }
       );
     }
