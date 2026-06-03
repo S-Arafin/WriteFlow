@@ -38,7 +38,7 @@ export async function createBlogPost(
 ): Promise<BlogActionResult> {
   // 1. Session & authentication validation
   const session = await getServerSession(authOptions);
-  if (!session?.user?.id) {
+  if (!session) {
     return {
       success: false,
       error: 'You must be signed in to publish a blog post.',
